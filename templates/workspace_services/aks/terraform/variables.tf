@@ -1,0 +1,53 @@
+variable "arm_environment" {
+  description = "Azure environment (e.g., public, AzureCloud)"
+  type        = string
+  default     = "public"
+}
+
+variable "id" {
+  description = "Resource ID for this installation"
+  type        = string
+}
+
+variable "aad_authority_url" {
+  description = "AAD authority URL"
+  type        = string
+  default     = "https://login.microsoftonline.com"
+}
+
+variable "workspace_id" {
+  description = "The unique ID of the TRE workspace."
+  type        = string
+}
+
+variable "node_count" {
+  description = "Number of nodes in the default node pool"
+  type        = number
+  default     = 3
+}
+
+variable "node_vm_size" {
+  description = "VM size for the default node pool"
+  type        = string
+  default     = "Standard_DS2_v2"
+}
+
+variable "mgmt_acr_name" {
+  description = "The name of the management Azure Container Registry."
+  type        = string
+}
+
+variable "mgmt_resource_group_name" {
+  description = "Resource group containing the management ACR."
+  type        = string
+}
+
+variable "tre_id" {
+  description = "TRE instance ID."
+  type        = string
+}
+
+variable "workspace_owners_group_id" {
+  description = "The object ID of the Azure AD group for workspace owners."
+  type        = string
+}

@@ -191,6 +191,72 @@ resource "azurerm_firewall_policy_rule_collection_group" "core" {
     }
   }
 
+  # AKS workspace service subnet application rules (see https://learn.microsoft.com/en-us/azure/aks/outbound-rules-control-egress)
+  # Remove/reduce this rule collection once management ACR has the required images
+  application_rule_collection {
+    name     = "arc-aks-services-subnet"
+    priority = 305
+    action   = "Allow"
+
+    # Required AKS FQDNs for control plane, registry, updates, monitoring, etc.
+    rule {
+      name = "aks-required-fqdns"
+      protocols {
+        port = "443"
+        type = "Https"
+      }
+      destination_fqdns = [
+        # Node <-> API server communication
+        "*.hcp.${var.location}.azmk8s.io",
+        # Microsoft Container Registry
+        "mcr.microsoft.com",
+        "*.data.mcr.microsoft.com",
+        # Azure API operations
+        "management.azure.com",
+        # Microsoft Entra authentication
+        "login.microsoftonline.com",
+        # OS package sources
+        "packages.microsoft.com",
+        # Required binaries
+        "acs-mirror.azureedge.net",
+        "packages.aks.azure.com",
+        # Monitoring endpoints
+        "*.ods.opinsights.azure.com",
+        "*.oms.opinsights.azure.com",
+        "dc.services.visualstudio.com",
+        "*.in.applicationinsights.azure.com",
+        "*.monitoring.azure.com",
+        "global.handler.control.monitor.azure.com",
+        "*.ingest.monitor.azure.com",
+        "*.metrics.ingest.monitor.azure.com",
+        # Policy endpoints
+        "data.policy.core.windows.net",
+        "store.policy.core.windows.net"
+      ]
+      source_addresses = ["*"]
+    }
+
+    # Optional recommended FQDNs for OS updates
+    rule {
+      name = "aks-optional-os-updates"
+      protocols {
+        port = "443"
+        type = "Https"
+      }
+      protocols {
+        port = "80"
+        type = "Http"
+      }
+      destination_fqdns = [
+        "security.ubuntu.com",
+        "azure.archive.ubuntu.com",
+        "changelogs.ubuntu.com",
+        "snapshot.ubuntu.com"
+      ]
+      source_addresses = ["*"]
+    }
+  }
+
   depends_on = [
     azurerm_firewall.fw
   ]

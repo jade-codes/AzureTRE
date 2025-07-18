@@ -60,3 +60,19 @@ resource "azurerm_private_dns_zone" "nexus" {
 
   lifecycle { ignore_changes = [tags] }
 }
+
+resource "azurerm_private_dns_zone" "privatelink_aks" {
+  name                = "privatelink.${var.location}.azmk8s.io"
+  resource_group_name = azurerm_resource_group.core.name
+  tags                = local.tre_core_tags
+
+  lifecycle { ignore_changes = [tags] }
+}
+resource "azurerm_private_dns_zone_virtual_network_link" "akslink" {
+  resource_group_name   = azurerm_resource_group.core.name
+  private_dns_zone_name = azurerm_private_dns_zone.privatelink_aks.name
+  name                  = azurerm_private_dns_zone.privatelink_aks.name
+  virtual_network_id    = module.network.core_vnet_id
+  tags                  = local.tre_core_tags
+  lifecycle { ignore_changes = [tags] }
+}
