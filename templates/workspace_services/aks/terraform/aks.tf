@@ -28,10 +28,14 @@ resource "azurerm_kubernetes_cluster" "aks" {
   private_cluster_enabled = true
 
   network_profile {
-    network_plugin    = "azure"
-    network_policy    = "azure"
-    load_balancer_sku = "standard"
-    outbound_type     = "loadBalancer"
+    network_plugin      = "azure"
+    network_policy      = "azure"
+    network_plugin_mode = "overlay"
+    load_balancer_sku   = "standard"
+    outbound_type       = "loadBalancer"
+    pod_cidr            = "192.168.0.0/16"
+    service_cidr        = "192.169.0.0/16"
+    dns_service_ip      = "192.169.0.10"
   }
 
   web_app_routing {
@@ -55,6 +59,7 @@ provider "helm" {
 }
 
 resource "helm_release" "workspace_service_aks" {
+  provider         = helm
   name             = "aks-${local.service_resource_name_suffix}"
   chart            = "./helm"
   namespace        = azurerm_kubernetes_cluster.aks.name
