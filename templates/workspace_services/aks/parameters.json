@@ -1,0 +1,86 @@
+{
+  "schemaType": "ParameterSet",
+  "schemaVersion": "1.0.1",
+  "namespace": "",
+  "name": "tre-workspace-service-aks",
+  "parameters": [
+    {
+      "name": "node_count",
+      "source": {
+        "env": "NODE_COUNT"
+      }
+    },
+    {
+      "name": "vm_size",
+      "source": {
+        "env": "VM_SIZE"
+      }
+    },
+    {
+      "name": "workspace_owners_group_id",
+      "source": {
+        "env": "WORKSPACE_OWNERS_GROUP_ID"
+      }
+    },
+    {
+      "name": "node_vm_size",
+      "source": {
+        "env": "NODE_VM_SIZE"
+      }
+    },
+    {
+      "name": "node_count",
+      "source": {
+        "env": "NODE_COUNT"
+      }
+    },
+    {
+      "name": "workspace_id",
+      "source": {
+        "env": "WORKSPACE_ID"
+      }
+    },
+    {
+      "name": "id",
+      "source": {
+        "env": "ID"
+      }
+    },
+    {
+      "name": "tre_id",
+      "source": {
+        "env": "TRE_ID"
+      }
+    },
+    {
+      "name": "tfstate_container_name",
+      "source": {
+        "env": "TERRAFORM_STATE_CONTAINER_NAME"
+      }
+    },
+    {
+      "name": "tfstate_resource_group_name",
+      "source": {
+        "env": "MGMT_RESOURCE_GROUP_NAME"
+      }
+    },
+    {
+      "name": "tfstate_storage_account_name",
+      "source": {
+        "env": "MGMT_STORAGE_ACCOUNT_NAME"
+      }
+    },
+    {
+      "name": "arm_environment",
+      "source": {
+        "env": "ARM_ENVIRONMENT"
+      }
+    },
+    {
+      "name": "aad_authority_url",
+      "source": {
+        "env": "AAD_AUTHORITY_URL"
+      }
+    }
+  ]
+}

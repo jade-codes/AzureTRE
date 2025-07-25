@@ -34,3 +34,4 @@ Core features include:
   - Virtual Desktops: Windows, Linux
   - AzureML (Jupyter, R Studio, VS Code)
   - ML Flow, Gitea
+  - Azure Kubernetes Service
