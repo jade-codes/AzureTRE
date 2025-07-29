@@ -234,19 +234,18 @@ resource "azurerm_network_security_rule" "allow_inbound_from_webapp_to_services"
 }
 
 resource "azurerm_network_security_rule" "allow_azure_load_balancer_inbound" {
-  access                      = "Allow"
-  destination_port_range      = "*"
-  destination_address_prefix  = azurerm_virtual_network.ws.address_space
-  source_address_prefix       = "AzureLoadBalancer"
-  source_port_range           = "*"
-  direction                   = "Inbound"
-  name                        = "allow-inbound-from-azure-load-balancer"
-  network_security_group_name = azurerm_network_security_group.ws.name
-  priority                    = 150
-  protocol                    = "*"
-  resource_group_name         = var.ws_resource_group_name
+  access                       = "Allow"
+  destination_port_range       = "*"
+  destination_address_prefixes = azurerm_subnet.services.address_prefixes
+  source_address_prefix        = "AzureLoadBalancer"
+  source_port_range            = "*"
+  direction                    = "Inbound"
+  name                         = "allow-inbound-from-azure-load-balancer"
+  network_security_group_name  = azurerm_network_security_group.ws.name
+  priority                     = 150
+  protocol                     = "*"
+  resource_group_name          = var.ws_resource_group_name
 }
-
 
 moved {
   from = azurerm_network_security_rule.deny-outbound-overrid
