@@ -29,7 +29,8 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   network_profile {
     network_plugin      = "azure"
-    network_policy      = "azure"
+    network_policy      = "cilium"
+    network_data_plane  = "cilium"
     network_plugin_mode = "overlay"
     load_balancer_sku   = "standard"
     outbound_type       = "loadBalancer"
