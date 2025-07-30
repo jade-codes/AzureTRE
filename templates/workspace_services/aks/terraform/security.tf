@@ -8,7 +8,7 @@ resource "azurerm_network_security_rule" "allow_azure_load_balancer_inbound" {
   destination_port_range      = "*"
   source_address_prefix       = "AzureLoadBalancer"
   destination_address_prefix  = data.azurerm_subnet.services.address_prefix
-  resource_group_name         = azurerm_kubernetes_cluster.aks.resource_group_name
+  resource_group_name         = data.azurerm_resource_group.ws.name
   network_security_group_name = "nsg-ws"
 }
 
