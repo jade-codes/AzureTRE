@@ -1,7 +1,7 @@
 ---
 schemaVersion: 1.0.0
 name: tre-workspace-service-aks
-version: 1.8.6
+version: 1.9.0
 description: "An Azure Kubernetes workspace service"
 dockerfile: Dockerfile.tmpl
 registry: azuretre
