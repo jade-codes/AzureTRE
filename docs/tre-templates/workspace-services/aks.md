@@ -15,7 +15,7 @@ Additionally, the workspace network security group (NSG) allows inbound traffic 
 
 ## Prerequisites
 
-- [An unrestricted workspace deployed](../workspaces/unrestricted.md)
+- [A base workspace deployed](../workspaces/base.md)
 
 - The example AKS images (for Gitea and Hello World) need to be built and pushed to your management ACR:
 
