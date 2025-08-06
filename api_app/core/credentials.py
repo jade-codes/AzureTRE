@@ -23,7 +23,7 @@ def get_credential() -> TokenCredential:
     else:
         return DefaultAzureCredential(authority=urlparse(AAD_AUTHORITY_URL).netloc,
                                       exclude_shared_token_cache_credential=True,
-                                      exclude_workload_identity_credential=True,
+                                      exclude_workload_identity_credential=False,
                                       exclude_developer_cli_credential=True,
                                       exclude_managed_identity_credential=True,
                                       exclude_powershell_credential=True
@@ -38,7 +38,7 @@ async def get_credential_async():
         if MANAGED_IDENTITY_CLIENT_ID
         else DefaultAzureCredentialASync(authority=urlparse(AAD_AUTHORITY_URL).netloc,
                                          exclude_shared_token_cache_credential=True,
-                                         exclude_workload_identity_credential=True,
+                                         exclude_workload_identity_credential=False,
                                          exclude_developer_cli_credential=True,
                                          exclude_managed_identity_credential=True,
                                          exclude_powershell_credential=True

@@ -1,0 +1,40 @@
+{{/*
+If using Envoy Gateway, we need to customize the Envoy proxy
+deployment to ste the source for the Envoy image and service
+type.
+*/}}
+{{- if and .Values.gateway.enabled (eq (lower .Values.gateway.type) "envoy") }}
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyProxy
+metadata:
+  name: {{ include "tre.fullname" . }}-envoy-proxy-config
+spec:
+  provider:
+    type: Kubernetes
+    kubernetes:
+      envoyDeployment:
+        {{- if and .Values.gateway.envoy .Values.gateway.envoy.image .Values.gateway.envoy.image.repository }}
+        container:
+          image: {{ .Values.gateway.envoy.image.repository }}:{{ .Values.gateway.envoy.image.tag }}
+        {{- end }}
+
+        {{- if or .Values.imagePullSecrets .Values.tolerations }}
+        pod:
+          {{- with .Values.imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 10 }}
+          {{- end }}
+        {{- end }}
+
+      envoyService:
+        type: LoadBalancer
+        annotations:
+          service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+        {{- if .Values.gateway.ipAddress }}
+        loadBalancerIP: {{ .Values.gateway.ipAddress | quote }}
+        {{- end }}
+{{- end }}
