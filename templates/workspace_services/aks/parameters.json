@@ -5,33 +5,9 @@
   "name": "tre-workspace-service-aks",
   "parameters": [
     {
-      "name": "node_count",
-      "source": {
-        "env": "NODE_COUNT"
-      }
-    },
-    {
-      "name": "vm_size",
-      "source": {
-        "env": "VM_SIZE"
-      }
-    },
-    {
       "name": "workspace_owners_group_id",
       "source": {
         "env": "WORKSPACE_OWNERS_GROUP_ID"
-      }
-    },
-    {
-      "name": "node_vm_size",
-      "source": {
-        "env": "NODE_VM_SIZE"
-      }
-    },
-    {
-      "name": "node_count",
-      "source": {
-        "env": "NODE_COUNT"
       }
     },
     {

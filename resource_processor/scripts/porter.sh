@@ -13,4 +13,6 @@ ln -s "${PORTER_HOME}/porter" "${PORTER_HOME}/runtimes/porter-runtime"
 "${PORTER_HOME}/porter" mixin install exec --version "${PORTER_VERSION}"
 "${PORTER_HOME}/porter" mixin install terraform --version "${PORTER_TERRAFORM_MIXIN_VERSION}"
 "${PORTER_HOME}/porter" mixin install az --version "${PORTER_AZ_MIXIN_VERSION}"
+"${PORTER_HOME}/porter" mixin install helm3 --version "$PORTER_HELM_MIXIN_VERSION" --feed-url https://mchorfa.github.io/porter-helm3/atom.xml
+
 "${PORTER_HOME}/porter" plugin install azure --version "${PORTER_AZURE_PLUGIN_VERSION}"

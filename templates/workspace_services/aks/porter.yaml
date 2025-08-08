@@ -1,7 +1,7 @@
 ---
 schemaVersion: 1.0.0
-name: tre-workspace-service-aks
-version: 1.9.0
+name: tre-service-aks
+version: 0.0.3
 description: "An Azure Kubernetes workspace service"
 dockerfile: Dockerfile.tmpl
 registry: azuretre
@@ -104,11 +104,6 @@ outputs:
     applyTo:
       - install
       - upgrade
-  - name: service_private_urls
-    type: string
-    applyTo:
-      - install
-      - upgrade
 
 install:
   - terraform:
@@ -122,8 +117,6 @@ install:
         aad_authority_url: ${ bundle.parameters.aad_authority_url }
         arm_environment: ${ bundle.parameters.arm_environment }
         workspace_owners_group_id: ${ bundle.parameters.workspace_owners_group_id }
-        node_count: ${ bundle.parameters.node_count }
-        node_vm_size: ${ bundle.parameters.node_vm_size }
       backendConfig:
         use_azuread_auth: "true"
         use_oidc: "true"
@@ -138,7 +131,6 @@ install:
         - name: aks_node_resource_group
         - name: aks_identity_principal_id
         - name: workspace_address_space
-        - name: service_private_urls
 
 upgrade:
   - terraform:
@@ -152,8 +144,6 @@ upgrade:
         aad_authority_url: ${ bundle.parameters.aad_authority_url }
         arm_environment: ${ bundle.parameters.arm_environment }
         workspace_owners_group_id: ${ bundle.parameters.workspace_owners_group_id }
-        node_count: ${ bundle.parameters.node_count }
-        node_vm_size: ${ bundle.parameters.node_vm_size }
       backendConfig:
         use_azuread_auth: "true"
         use_oidc: "true"
@@ -168,7 +158,6 @@ upgrade:
         - name: aks_node_resource_group
         - name: aks_identity_principal_id
         - name: workspace_address_space
-        - name: service_private_urls
 
 uninstall:
   - terraform:
@@ -182,8 +171,6 @@ uninstall:
         aad_authority_url: ${ bundle.parameters.aad_authority_url }
         arm_environment: ${ bundle.parameters.arm_environment }
         workspace_owners_group_id: ${ bundle.parameters.workspace_owners_group_id }
-        node_count: ${ bundle.parameters.node_count }
-        node_vm_size: ${ bundle.parameters.node_vm_size }
       backendConfig:
         use_azuread_auth: "true"
         use_oidc: "true"

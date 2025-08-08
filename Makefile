@@ -549,11 +549,3 @@ db-migrate: api-healthcheck ## 🗄️ Run database migrations
 	&& . ${MAKEFILE_DIR}/devops/scripts/load_env.sh ${MAKEFILE_DIR}/core/private.env \
 	&& . ${MAKEFILE_DIR}/devops/scripts/get_access_token.sh \
 	&& . ${MAKEFILE_DIR}/devops/scripts/migrate_state_store.sh --tre_url $${TRE_URL} --insecure
-
-build-and-push-example-aks-images: ## 🏗️ Build example AKS images
-	$(call target_title,"Building example AKS images") \
-	&& . ${MAKEFILE_DIR}/devops/scripts/check_dependencies.sh env \
-	&& . ${MAKEFILE_DIR}/devops/scripts/set_docker_sock_permission.sh \
-	&& if [ "$${DISABLE_ACR_PUBLIC_ACCESS}" = "true" ]; then source ${MAKEFILE_DIR}/devops/scripts/mgmtacr_enable_public_access.sh; fi \
-	&& export ACR_NAME=$(ACR_NAME) ACR_FQDN=$(ACR_FQDN) \
-	&& ${MAKEFILE_DIR}/devops/scripts/create_example_aks_images.sh

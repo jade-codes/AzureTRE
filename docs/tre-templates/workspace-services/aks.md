@@ -1,39 +1,60 @@
-# AKS Workspace Service
+# AKS Service Bundle
+
+This workspace service template provisions an Azure Kubernetes Service (AKS) cluster as part of a TRE workspace. The AKS cluster provides a container orchestration platform for running containerised workloads within the secure TRE environment.
 
 See: [Azure Kubernetes Service (AKS)](https://learn.microsoft.com/en-us/azure/aks/)
 
 ## Firewall Rules
 
-The AKS workspace service opens outbound access to:
+Please be aware that the following Firewall rules are opened for the workspace when this service is deployed:
+
+Service Tags:
 
 - AzureActiveDirectory
-- Microsoft Entra ID CDN - `https://aadcdn.msftauth.net`
-- Required AKS FQDNs for control plane, registry, updates, monitoring, and policy endpoints (see [AKS outbound rules](https://learn.microsoft.com/en-us/azure/aks/outbound-rules-control-egress))
-- OS update sources (e.g., `security.ubuntu.com`, `azure.archive.ubuntu.com`)
-
-Additionally, the workspace network security group (NSG) allows inbound traffic from the Azure Load Balancer, which is required for AKS node health probes.
 
 ## Prerequisites
 
-- [A base workspace deployed](../workspaces/base.md)
+- [A base workspace bundle installed](../workspaces/base.md)
 
-- The example AKS images (for Gitea and Hello World) need to be built and pushed to your management ACR:
+## Building the Bundle
 
-  `make build-and-push-example-aks-images`
+The AKS workspace service container image needs building and pushing:
 
-- The AKS workspace service container image needs building and pushing:
+```bash
+make workspace_service_bundle BUNDLE=aks
+```
 
-  `make workspace_service_bundle BUNDLE=aks`
+## AKS Workspace Service Configuration
 
-## Deployment Steps
+When deploying an AKS service into a workspace the following properties need to be configured.
 
-1. Ensure you have completed all prerequisites above.
-2. Deploy the AKS workspace service using the TRE UI or CLI.
-3. After deployment, the workspace UI will display private server URLs for the AKS services (e.g., Gitea, Hello World).
-4. Access these services from any VM inside the workspace using the provided private URLs.
+### Required Properties
 
-![AKS Workspace Service Deployment](./images/aks-deployment.png)
+| Property | Description |
+| -------- | ----------- |
+| `workspace_owners_group_id` | The object ID of the Azure AD group that will be granted admin access to the AKS cluster |
 
-## Accessing AKS Services
+## User Resources
 
-To access the AKS services (such as Gitea or Hello World) from a VM inside the workspace, use the private server URLs shown in the workspace UI. These URLs provide secure, internal-only access to the deployed services. Direct access to the AKS cluster itself is not required for typical usage.
+This AKS workspace service supports various user resources that can be deployed to the cluster:
+
+- **Platform Resources**: Predefined workload configurations for DevSecOps, AI/ML, and Knowledge Graph scenarios
+
+See the [AKS Platform Workloads documentation](../user-resources/platform-workloads.md) for more details.
+
+## Architecture
+
+The AKS workspace service creates:
+- An AKS cluster with a managed control plane
+- A default node pool
+- Network integration with the TRE workspace virtual network
+- Azure AD integration for cluster access control
+- Container registry integration for image management
+
+## Outputs
+
+The AKS workspace service provides outputs that can be consumed by user resources:
+- AKS cluster name and resource group
+- Cluster identity and FQDN
+- Node resource group for additional resources
+- Workspace address space for networking

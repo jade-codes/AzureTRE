@@ -13,9 +13,11 @@ spec:
         app: hello-world
     spec:
       serviceAccountName: hello-world
+      nodeSelector:
+        agentpool: "{{ .Values.nodeSelector.agentpool }}"
       containers:
         - name: hello-world
-          image: "{{ .Values.acr_server }}/microsoft/azuretre/example/hello-world:latest"
+          image: "hashicorp/http-echo:latest"
           ports:
             - name: http
               containerPort: 5678

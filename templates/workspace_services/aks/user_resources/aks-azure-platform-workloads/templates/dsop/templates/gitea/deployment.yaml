@@ -13,9 +13,11 @@ spec:
         app: gitea
     spec:
       serviceAccountName: gitea
+      nodeSelector:
+        agentpool: "{{ .Values.nodeSelector.agentpool }}"
       containers:
-        - name: hello-world
-          image: "{{ .Values.acr_server }}/microsoft/azuretre/example/gitea:latest"
+        - name: gitea
+          image: "gitea/gitea:latest"
           ports:
             - name: http
               containerPort: 3000

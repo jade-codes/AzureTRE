@@ -13,6 +13,7 @@ BASE_WORKSPACE = "tre-workspace-base"
 UNRESTRICTED_WORKSPACE = "tre-workspace-unrestricted"
 AIRLOCK_IMPORT_REVIEW_WORKSPACE = "tre-workspace-airlock-import-review"
 
+AKS_SERVICE = "tre-service-aks"
 AZUREML_SERVICE = "tre-service-azureml"
 GUACAMOLE_SERVICE = "tre-service-guacamole"
 GITEA_SERVICE = "tre-workspace-service-gitea"
@@ -21,7 +22,6 @@ MYSQL_SERVICE = "tre-workspace-service-mysql"
 HEALTH_SERVICE = "tre-workspace-service-health"
 AZURESQL_SERVICE = "tre-workspace-service-azuresql"
 OPENAI_SERVICE = "tre-workspace-service-openai"
-AKS_SERVICE = "tre-workspace-service-aks"
 
 FIREWALL_SHARED_SERVICE = "tre-shared-service-firewall"
 GITEA_SHARED_SERVICE = "tre-shared-service-gitea"
@@ -31,6 +31,7 @@ CERTS_SHARED_SERVICE = "tre-shared-service-certs"
 ADMIN_VM_SHARED_SERVICE = "tre-shared-service-admin-vm"
 CYCLECLOUD_SHARED_SERVICE = "tre-shared-service-cyclecloud"
 
+AKS_PLATFORM_USER_RESOURCE = "tre-service-aks-platform-workloads"
 GUACAMOLE_WINDOWS_USER_RESOURCE = "tre-service-guacamole-windowsvm"
 GUACAMOLE_LINUX_USER_RESOURCE = "tre-service-guacamole-linuxvm"
 

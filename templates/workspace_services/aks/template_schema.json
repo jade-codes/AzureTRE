@@ -1,31 +1,38 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "AKS Workspace Service",
-  "description": "Parameters for deploying an AKS workspace service in Azure TRE.",
+  "title": "Workspace Platform",
+  "description": "Parameters for deploying the platform.",
   "type": "object",
   "properties": {
-    "node_count": {
-      "type": "integer",
-      "title": "Node Count",
-      "description": "Number of nodes in the default node pool.",
-      "default": 3
-    },
-    "node_vm_size": {
+    "display_name": {
       "type": "string",
-      "title": "Node VM Size",
-      "description": "VM size for the default node pool.",
-      "default": "Standard_DS2_v2"
+      "title": "Name for the Workspace Platform",
+      "description": "The name of the workspace platform to be displayed to users.",
+      "default": "Workload Platform",
+      "updateable": true
+    },
+    "description": {
+      "type": "string",
+      "title": "Description of the Workspace Platform",
+      "description": "Describe what this workspace platform does.",
+      "default": "A managed platform for deploying, scaling, and managing containerised applications and microservices.",
+      "updateable": true
+    },
+    "overview": {
+      "type": "string",
+      "title": "Workspace Platform Overview",
+      "description": "Long form description of the workspace platform, in markdown syntax",
+      "default": "The Workload Platform provides a managed environment for deploying and orchestrating containerised applications. It offers automated scaling, load balancing, and service discovery for your workloads.",
+      "updateable": true
     },
     "workspace_owners_group_id": {
       "type": "string",
       "title": "Workspace Owners Group Object ID",
-      "description": "The object ID of the Azure AD group that will be granted admin access to the AKS cluster."
+      "description": "The object ID of the Azure AD group that will be granted admin access to the workspace platform."
     }
   },
-  "required": ["node_count", "node_vm_size", "workspace_owners_group_id"],
+  "required": [ "workspace_owners_group_id"],
   "uiSchema": {
-    "node_count": { "ui:widget": "updown" },
-    "node_vm_size": { "ui:widget": "text" },
     "workspace_owners_group_id": { "ui:widget": "text" }
   },
   "pipeline": {

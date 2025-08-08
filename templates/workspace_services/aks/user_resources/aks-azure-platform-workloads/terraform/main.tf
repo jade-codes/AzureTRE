@@ -1,14 +1,9 @@
-
 # Azure Provider source and version being used
 terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
       version = "=4.37.0"
-    }
-    azuread = {
-      source  = "hashicorp/azuread"
-      version = "~>3.1.0"
     }
   }
 
@@ -28,6 +23,10 @@ provider "azurerm" {
       recover_soft_deleted_secrets      = true
       recover_soft_deleted_certificates = true
       recover_soft_deleted_keys         = true
+    }
+    virtual_machine {
+      skip_shutdown_and_force_delete = true
+      delete_os_disk_on_deletion     = true
     }
   }
   storage_use_azuread = true

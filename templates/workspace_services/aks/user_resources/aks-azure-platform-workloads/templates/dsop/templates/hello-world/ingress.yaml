@@ -5,7 +5,7 @@ metadata:
 spec:
   ingressClassName: webapprouting.kubernetes.azure.com
   rules:
-    - host: hello-world-{{ .Values.name }}.{{ .Values.dns_zone }}
+    - host: hello-world-{{ .Values.name }}.{{ .Values.dnsZone }}
       http:
         paths:
           - path: /

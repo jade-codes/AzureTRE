@@ -26,11 +26,3 @@ output "aks_identity_principal_id" {
 output "workspace_address_space" {
   value = jsonencode(data.azurerm_virtual_network.ws.address_space)
 }
-
-output "service_private_urls" {
-  description = "List of private URLs for AKS services"
-  value = [
-    "gitea-${azurerm_kubernetes_cluster.aks.name}.${data.azurerm_private_dns_zone.aks.name}",
-    "hello-world-${azurerm_kubernetes_cluster.aks.name}.${data.azurerm_private_dns_zone.aks.name}"
-  ]
-}

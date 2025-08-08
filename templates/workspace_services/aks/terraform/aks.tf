@@ -5,10 +5,11 @@ resource "azurerm_kubernetes_cluster" "aks" {
   dns_prefix_private_cluster = "aks-${local.service_resource_name_suffix}"
 
   default_node_pool {
-    name           = "default"
-    node_count     = var.node_count
-    vm_size        = var.node_vm_size
-    vnet_subnet_id = data.azurerm_subnet.services.id
+    name                 = "default"
+    vnet_subnet_id       = data.azurerm_subnet.services.id
+    auto_scaling_enabled = true
+    max_count            = 5
+    min_count            = 1
   }
 
   identity {
@@ -48,35 +49,4 @@ resource "azurerm_kubernetes_cluster" "aks" {
   lifecycle { ignore_changes = [tags] }
 
   depends_on = [azurerm_role_assignment.aks_dns_contributor_role, azurerm_role_assignment.aks_network_contributor]
-}
-
-provider "helm" {
-  kubernetes {
-    host                   = azurerm_kubernetes_cluster.aks.kube_admin_config.0.host
-    client_certificate     = base64decode(azurerm_kubernetes_cluster.aks.kube_admin_config.0.client_certificate)
-    client_key             = base64decode(azurerm_kubernetes_cluster.aks.kube_admin_config.0.client_key)
-    cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.aks.kube_admin_config.0.cluster_ca_certificate)
-  }
-}
-
-resource "helm_release" "workspace_service_aks" {
-  provider         = helm
-  name             = "aks-${local.service_resource_name_suffix}"
-  chart            = "./helm"
-  namespace        = azurerm_kubernetes_cluster.aks.name
-  create_namespace = true
-
-  dynamic "set" {
-    for_each = {
-      name       = azurerm_kubernetes_cluster.aks.name
-      dns_zone   = data.azurerm_private_dns_zone.aks.name
-      acr_server = data.azurerm_container_registry.mgmt_acr.login_server
-    }
-    content {
-      name  = set.key
-      value = set.value
-    }
-  }
-
-  depends_on = [azurerm_kubernetes_cluster.aks]
 }

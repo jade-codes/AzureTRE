@@ -114,6 +114,7 @@ nav:
           - Guacamole Linux VM: tre-templates/user-resources/guacamole-linux-vm.md
           - Import Review VM: tre-templates/user-resources/import-reviewvm.md
           - Export Review VM: tre-templates/user-resources/export-reviewvm.md
+          - Platform Workloads: tre-templates/user-resources/platform-workloads.md
 
   - Technical Guide: # All Technical Documentation (Admin, Development)
       - Administration: # Docs related to the deployment and operation of AzureTRE infrastructure

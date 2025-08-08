@@ -231,7 +231,11 @@ resource "azurerm_firewall_policy_rule_collection_group" "core" {
         "*.metrics.ingest.monitor.azure.com",
         # Policy endpoints
         "data.policy.core.windows.net",
-        "store.policy.core.windows.net"
+        "store.policy.core.windows.net",
+        # Docker
+        "registry-1.docker.io",
+        "auth.docker.io",
+        "production.cloudflare.docker.com"
       ]
       source_addresses = ["*"]
     }

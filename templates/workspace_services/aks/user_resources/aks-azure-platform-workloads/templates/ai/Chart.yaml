@@ -1,0 +1,4 @@
+apiVersion: v2
+name: workspace-service-aks-ai-enablement
+version: "1.0.0"
+description: Helm chart for AKS workspace service for AI enablement

@@ -20,18 +20,6 @@ variable "workspace_id" {
   type        = string
 }
 
-variable "node_count" {
-  description = "Number of nodes in the default node pool"
-  type        = number
-  default     = 3
-}
-
-variable "node_vm_size" {
-  description = "VM size for the default node pool"
-  type        = string
-  default     = "Standard_DS2_v2"
-}
-
 variable "mgmt_acr_name" {
   description = "The name of the management Azure Container Registry."
   type        = string

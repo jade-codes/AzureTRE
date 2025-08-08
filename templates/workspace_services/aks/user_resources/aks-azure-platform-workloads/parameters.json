@@ -1,0 +1,96 @@
+{
+  "schemaType": "ParameterSet",
+  "schemaVersion": "1.0.1",
+  "namespace": "",
+  "name": "tre-service-aks-platform-workloads",
+  "parameters": [
+    {
+      "name": "workspace_id",
+      "source": { "env": "WORKSPACE_ID" }
+    },
+    {
+      "name": "node_count",
+      "source": { "env": "NODE_COUNT" }
+    },
+    {
+      "name": "node_size",
+      "source": { "env": "NODE_SIZE" }
+    },
+    {
+      "name": "node_autoscaling_enabled",
+      "source": { "env": "NODE_AUTOSCALING_ENABLED" }
+    },
+    {
+      "name": "node_autoscaling_min_count",
+      "source": { "env": "NODE_AUTOSCALING_MIN_COUNT" }
+    },
+    {
+      "name": "node_autoscaling_max_count",
+      "source": { "env": "NODE_AUTOSCALING_MAX_COUNT" }
+    },
+    {
+      "name": "workload_type",
+      "source": { "env": "WORKLOAD_TYPE" }
+    },
+    {
+      "name": "workload_name",
+      "source": { "env": "WORKLOAD_NAME" }
+    },
+    {
+      "name": "parent_service_id",
+      "source": { "env": "PARENT_SERVICE_ID" }
+    },
+    {
+      "name": "tre_id",
+      "source": { "env": "TRE_ID" }
+    },
+    {
+      "name": "mgmt_acr_name",
+      "source": { "env": "MGMT_ACR_NAME" }
+    },
+    {
+      "name": "mgmt_resource_group_name",
+      "source": { "env": "MGMT_RESOURCE_GROUP_NAME" }
+    },
+    {
+      "name": "id",
+      "source": { "env": "ID" }
+    },
+    {
+      "name": "tfstate_container_name",
+      "source": {
+        "env": "TERRAFORM_STATE_CONTAINER_NAME"
+      }
+    },
+    {
+      "name": "tfstate_resource_group_name",
+      "source": {
+        "env": "MGMT_RESOURCE_GROUP_NAME"
+      }
+    },
+    {
+      "name": "tfstate_storage_account_name",
+      "source": {
+        "env": "MGMT_STORAGE_ACCOUNT_NAME"
+      }
+    },
+    {
+      "name": "arm_use_msi",
+      "source": { "env": "ARM_USE_MSI" }
+    },
+    {
+      "name": "azure_environment",
+      "source": {
+        "env": "AZURE_ENVIRONMENT"
+      }
+    },
+    {
+      "name": "arm_environment",
+      "source": { "env": "ARM_ENVIRONMENT" }
+    },
+    {
+      "name": "aad_authority_url",
+      "source": { "env": "AAD_AUTHORITY_URL" }
+    }
+  ]
+}
