@@ -69,6 +69,15 @@ resource "azurerm_subnet_route_table_association" "rt_airlock_events_subnet_asso
   ]
 }
 
+resource "azurerm_subnet_route_table_association" "rt_vm_build_subnet_association" {
+  subnet_id      = module.network.vm_build_subnet_id
+  route_table_id = azurerm_route_table.rt.id
+
+  depends_on = [
+    module.firewall
+  ]
+}
+
 
 resource "azurerm_route_table" "fw_tunnel_rt" {
   count                         = var.firewall_force_tunnel_ip != "" ? 1 : 0

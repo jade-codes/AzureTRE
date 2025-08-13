@@ -111,6 +111,14 @@ resource "azurerm_virtual_network" "core" {
     name             = "AzureFirewallManagementSubnet"
     address_prefixes = [local.firewall_management_subnet_address_prefix]
   }
+
+  subnet {
+    name                                          = "VMImageBuildSubnet"
+    address_prefixes                              = [local.vm_image_build_subnet_address_prefix]
+    security_group                                = azurerm_network_security_group.vm_image_build.id
+    private_endpoint_network_policies             = "Disabled"
+    private_link_service_network_policies_enabled = false
+  }
 }
 
 resource "azurerm_ip_group" "resource_processor" {

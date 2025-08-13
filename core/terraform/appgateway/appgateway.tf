@@ -4,7 +4,7 @@ resource "azurerm_public_ip" "appgwpip" {
   location            = var.location
   allocation_method   = "Static" # Static IPs are allocated immediately
   sku                 = "Standard"
-  domain_name_label   = var.tre_id
+  domain_name_label   = "${var.tre_id}"
   tags                = local.tre_core_tags
 
   lifecycle { ignore_changes = [tags, zones] }

@@ -140,6 +140,27 @@ resource "azurerm_network_security_group" "app_gw" {
   lifecycle { ignore_changes = [tags] }
 }
 
+resource "azurerm_network_security_group" "vm_image_build" {
+  name                = "nsg-vm-image-build"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  tags                = local.tre_core_tags
+
+  security_rule {
+    name                       = "AllowVMImageBuilder"
+    priority                   = 100
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "60000-60001"
+    source_address_prefix      = "AzureLoadBalancer"
+    destination_address_prefix = "VirtualNetwork"
+  }
+
+  lifecycle { ignore_changes = [tags] }
+}
+
 # Network security group with only default security rules
 # See https://docs.microsoft.com/azure/virtual-network/network-security-groups-overview#default-security-rules
 resource "azurerm_network_security_group" "default_rules" {

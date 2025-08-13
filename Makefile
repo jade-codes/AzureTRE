@@ -549,3 +549,16 @@ db-migrate: api-healthcheck ## 🗄️ Run database migrations
 	&& . ${MAKEFILE_DIR}/devops/scripts/load_env.sh ${MAKEFILE_DIR}/core/private.env \
 	&& . ${MAKEFILE_DIR}/devops/scripts/get_access_token.sh \
 	&& . ${MAKEFILE_DIR}/devops/scripts/migrate_state_store.sh --tre_url $${TRE_URL} --insecure
+
+vm-softwareeng-fetch-dependencies: ## 🛠️ Fetch dependencies for the Software Engineering VM Build
+	$(call target_title,"Fetching dependencies for Software Engineering VM Build") \
+	&& . ${MAKEFILE_DIR}/devops/scripts/check_dependencies.sh nodocker,env \
+	&& . ${MAKEFILE_DIR}/devops/scripts/load_env.sh ${MAKEFILE_DIR}/core/private.env \
+	&& pushd ${MAKEFILE_DIR}/vmimages/softwareeng/scripts > /dev/null && ./download_dependencies.sh && popd > /dev/null
+
+vm-softwareeng-deploy:
+	$(call target_title, "Build and deploy Software Engineering VM Image temaplte") \
+	&& . ${MAKEFILE_DIR}/devops/scripts/check_dependencies.sh nodocker,env \
+	&& . ${MAKEFILE_DIR}/devops/scripts/load_env.sh ${MAKEFILE_DIR}/core/private.env \
+	&& pushd ${MAKEFILE_DIR}/vmimages/softwareeng > /dev/null && ./deploy.sh && popd > /dev/null
+

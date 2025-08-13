@@ -223,6 +223,21 @@ module "resource_processor_vmss_porter" {
   ]
 }
 
+module "computegallery" {
+  source                              = "./computegallery"
+  tre_id                              = var.tre_id
+  location                            = var.location
+  resource_group_name                 = azurerm_resource_group.core.name
+  tre_core_tags                       = local.tre_core_tags
+  shared_subnet                       = module.network.shared_subnet_id
+  vm_image_build_software_dns_zone_id = module.network.blob_core_dns_zone_id
+
+  depends_on = [
+    azurerm_resource_group.core,
+    module.network
+  ]
+}
+
 module "terraform_azurerm_environment_configuration" {
   source          = "git::https://github.com/microsoft/terraform-azurerm-environment-configuration.git?ref=0.6.0"
   arm_environment = var.arm_environment

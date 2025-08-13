@@ -1,0 +1,17 @@
+variable "tre_id" {
+  type        = string
+  description = "Unique TRE ID"
+}
+
+variable "location" {
+  type = string
+}
+
+variable "resource_group_name" {
+  type = string
+}
+
+variable "tre_core_tags" {
+  type        = map(string)
+  description = "Tags to apply to all resources"
+}
