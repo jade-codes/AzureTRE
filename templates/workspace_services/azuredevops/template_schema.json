@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://github.com/microsoft/AzureTRE/templates/workspace_services/sql/template_schema.json",
+  "type": "object",
+  "title": "Azure DevOps Workspace Service",
+  "description": "Provides access to Azure DevOps within the workspace",
+  "required": [],
+  "properties": {
+    "display_name": {
+      "type": "string",
+      "title": "Name for the workspace service",
+      "description": "The name of the workspace service to be displayed to users",
+      "default": "Azure DevOps",
+      "updateable": true
+    },
+    "description": {
+      "type": "string",
+      "title": "Description of the workspace service",
+      "description": "Description of the workspace service",
+      "default": "Access Azure DevOps Services from the workspace",
+      "updateable": true
+    },
+    "overview": {
+      "type": "string",
+      "title": "Workspace Service Overview",
+      "description": "Long form description of the workspace service, in markdown syntax",
+      "default": "Azure DevOps Services is Microsoft’s cloud-based platform for managing the entire software delivery lifecycle. It provides a unified toolset for planning, building, testing, and delivering applications, all backed by enterprise-grade security and scalability.",
+      "updateable": true
+    }
+  }
+}
