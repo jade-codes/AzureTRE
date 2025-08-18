@@ -99,6 +99,17 @@ RUN if [ "${INTERACTIVE}" = "false" ]; then \
 apt-get update && apt-get install --no-install-recommends -y git \
 && apt-get clean -y && rm -rf /var/lib/apt/lists/* ; fi
 
+# Install kubectl
+RUN az aks install-cli
+
+# Install helm
+RUN curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | tee /usr/share/keyrings/helm.gpg > /dev/null \
+&& apt-get install apt-transport-https --yes \
+&& echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | tee /etc/apt/sources.list.d/helm-stable-debian.list \
+&& apt-get update \
+&& apt-get install helm
+
+
 USER $USERNAME
 
 # Save command line history

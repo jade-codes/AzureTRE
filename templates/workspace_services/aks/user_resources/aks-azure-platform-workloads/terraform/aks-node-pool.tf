@@ -1,5 +1,5 @@
 resource "azurerm_kubernetes_cluster_node_pool" "aks" {
-  name                        = var.node_agent_pool_label
+  name                        = "${var.node_agent_pool_label}${var.environment_type}"
   kubernetes_cluster_id       = data.azurerm_kubernetes_cluster.aks.id
   vm_size                     = var.node_size
   node_count                  = var.node_count

@@ -6,7 +6,7 @@ RUN rm -f /etc/apt/apt.conf.d/docker-clean; echo 'Binary::apt::APT::Keep-Downloa
 
 # Install jq for JSON processing
 RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt \
-    apt-get update && apt-get install -y jq --no-install-recommends
+    apt-get update && apt-get install -y jq gettext-base --no-install-recommends
 
 # PORTER_MIXINS
 

@@ -1,0 +1,116 @@
+jenkins:
+  enabled: true
+  persistence:
+    enabled: true
+    storageClass: "managed-csi"
+    size: "5Gi"
+
+  controller:
+    admin:
+      username: "admin"
+      password: ${INITIAL_ADMIN_PASSWORD}
+
+    nodeSelector:
+      agentpool: ${AKS_AGENT_POOL}
+
+    ingress:
+      enabled: true
+      ingressClassName: "webapprouting.kubernetes.azure.com"
+      hostName: "jenkins-${AKS_SUBDOMAIN_SUFFIX }.${AKS_DNS_ZONE}"
+
+    JCasC:
+      enabled: true
+      defaultConfig: true
+      configScripts:
+        security: |
+          jenkins:
+            securityRealm:
+              local:
+                allowsSignup: false
+                users:
+                  - id: "admin"
+                    password: ${INITIAL_ADMIN_PASSWORD}
+            authorizationStrategy:
+              loggedInUsersCanDoAnything:
+                allowAnonymousRead: false
+  agent:
+    enabled: true
+    nodeSelector:
+      agentpool: ${AKS_AGENT_POOL}
+
+nexus-repository-manager:
+  enabled: true
+
+  nexus:
+    nodeSelector:
+      agentpool: ${AKS_AGENT_POOL}
+
+    env:
+      - name: INSTALL4J_ADD_VM_PARAMS
+        value: |-
+          -Xms2703M -Xmx2703M
+          -XX:MaxDirectMemorySize=2703M
+          -XX:+UnlockExperimentalVMOptions
+          -XX:+UseCGroupMemoryLimitForHeap
+          -Djava.util.prefs.userRoot=/nexus-data/javaprefs
+      - name: NEXUS_SECURITY_RANDOMPASSWORD
+        value: "false"
+
+  persistence:
+    enabled: true
+    storageClass: "managed-csi"
+    storageSize: 5Gi
+
+  ingress:
+    enabled: true
+    ingressClassName: "webapprouting.kubernetes.azure.com"
+    hostRepo: "nexus-${AKS_SUBDOMAIN_SUFFIX }.${AKS_DNS_ZONE}"
+
+gitea:
+  enabled: true
+
+  gitea:
+    nodeSelector:
+      agentpool: ${AKS_AGENT_POOL}
+
+    admin:
+      username: gitea-admin
+      password: ${INITIAL_ADMIN_PASSWORD}
+      email: gitea@test.com
+
+    config:
+      database:
+        DB_TYPE: sqlite3
+      session:
+        PROVIDER: memory
+      cache:
+        ADAPTER: memory
+      queue:
+        TYPE: leveldb
+
+  persistence:
+    enabled: true
+    storageClass: "managed-csi"
+    storageSize: 5Gi
+
+  ingress:
+    enabled: true
+    className: "webapprouting.kubernetes.azure.com"
+    hosts:
+      - host: "gitea-${AKS_SUBDOMAIN_SUFFIX }.${AKS_DNS_ZONE}"
+        paths:
+          - path: /
+            pathType: "Prefix"
+
+  redis:
+    enabled: false
+  redis-cluster:
+    enabled: false
+  valkey-cluster:
+    enabled: false
+  valkey:
+    enabled: false
+  postgresql:
+    enabled: false
+  postgresql-ha:
+    enabled: false

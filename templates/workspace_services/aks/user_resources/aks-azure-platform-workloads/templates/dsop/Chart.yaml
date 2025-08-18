@@ -1,4 +1,19 @@
 apiVersion: v2
 name: workspace-service-aks-devsecops
-version: "1.0.0"
-description: Helm chart for AKS workspace service referencing Gitea and Hello World
+version: "1.0.5"
+description: Helm chart for AKS workspace service with DevSecOps tools (Gitea, Jenkins, Nexus)
+appVersion: "1.0.0"
+
+dependencies:
+  - name: jenkins
+    version: "5.8.79"
+    repository: "https://charts.jenkins.io"
+    condition: jenkins.enabled
+  - name: nexus-repository-manager
+    version: "64.2.0"
+    repository: "https://sonatype.github.io/helm3-charts"
+    condition: nexus-repository-manager.enabled
+  - name: gitea
+    version: "9.6.1"
+    repository: "https://dl.gitea.io/charts"
+    condition: gitea.enabled

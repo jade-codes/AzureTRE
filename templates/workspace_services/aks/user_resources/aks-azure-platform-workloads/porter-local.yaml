@@ -1,0 +1,63 @@
+---
+schemaVersion: 1.0.0
+name: tre-debug
+version: 1.0.0
+description: "Debug template processing"
+dockerfile: Dockerfile.tmpl
+registry: localhost:5001
+
+parameters:
+  - name: workload_type
+    type: string
+    default: "dsop"
+  - name: workload_environment_type
+    type: string
+    default: "dev"
+  - name: initial_admin_password
+    type: string
+    default: "admin123"
+
+mixins:
+  - exec
+  - helm3
+  - az:
+      clientVersion: 2.67.0
+
+install:
+  - exec:
+      description: "Create example outputs"
+      command: /bin/bash
+      arguments:
+        - -c
+        - |
+            echo "Creating example outputs for AKS DNS Suffix and Private DNS Zone"
+            echo "example.com" > /cnab/app/outputs/aks_subdomain_suffix
+            echo "private.example.com" > /cnab/app/outputs/aks_private_dns_zone
+            echo "dsop-dev" > /cnab/app/outputs/aks_agent_pool
+  - exec:
+      description: "Debug template processing"
+      command: /bin/bash
+      arguments:
+        - -c
+        - |
+            # Set environment variables for substitution
+            export AKS_AGENT_POOL=$(cat /cnab/app/outputs/aks_agent_pool)
+            export AKS_SUBDOMAIN_SUFFIX=$(cat /cnab/app/outputs/aks_subdomain_suffix)
+            export AKS_DNS_ZONE=$(cat /cnab/app/outputs/aks_private_dns_zone)
+            export INITIAL_ADMIN_PASSWORD=${{ bundle.parameters.initial_admin_password }}
+
+            # Create values.yaml from template
+            envsubst < "./templates/${{ bundle.parameters.workload_type }}/values-template.yaml" > "./templates/${{ bundle.parameters.workload_type }}/values.yaml"
+
+            cat "./templates/${{ bundle.parameters.workload_type }}/values.yaml"
+
+            echo "Updated values.yaml with:"
+            echo "  Agent Pool: $AKS_AGENT_POOL"
+            echo "  DNS Suffix: $AKS_SUBDOMAIN_SUFFIX"
+            echo "  DNS Zone: $AKS_DNS_ZONE"
+
+uninstall:
+  - exec:
+      description: "No uninstallation steps defined"
+      command: /bin/true
+      arguments: []

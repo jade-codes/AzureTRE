@@ -37,6 +37,18 @@
       "source": { "env": "WORKLOAD_NAME" }
     },
     {
+      "name": "workload_environment",
+      "source": { "env": "WORKLOAD_ENVIRONMENT" }
+    },
+    {
+      "name": "workload_environment_type",
+      "source": { "env": "WORKLOAD_ENVIRONMENT_TYPE" }
+    },
+    {
+      "name": "initial_admin_password",
+      "source": { "env": "INITIAL_ADMIN_PASSWORD" }
+    },
+    {
       "name": "parent_service_id",
       "source": { "env": "PARENT_SERVICE_ID" }
     },

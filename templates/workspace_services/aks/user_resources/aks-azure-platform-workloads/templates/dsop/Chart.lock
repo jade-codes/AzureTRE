@@ -1,0 +1,12 @@
+dependencies:
+- name: jenkins
+  repository: https://charts.jenkins.io
+  version: 5.8.79
+- name: nexus-repository-manager
+  repository: https://sonatype.github.io/helm3-charts
+  version: 64.2.0
+- name: gitea
+  repository: https://dl.gitea.io/charts
+  version: 9.6.1
+digest: sha256:96fca5b2e07e528f22b0f38da39609dd86781d226a5a992f2da90b63f23300fa
+generated: "2025-08-14T00:44:02.887479652+01:00"

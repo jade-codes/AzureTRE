@@ -1,7 +1,7 @@
 ---
 schemaVersion: 1.0.0
 name: tre-service-aks-platform-workloads
-version: 0.0.9
+version: 1.0.0
 description: "Deploy platform workloads in AKS"
 dockerfile: Dockerfile.tmpl
 registry: azuretre
@@ -26,6 +26,8 @@ parameters:
   - name: workload_name
     type: string
   - name: workload_type
+    type: string
+  - name: workload_environment_type
     type: string
   - name: parent_service_id
     type: string
@@ -53,6 +55,9 @@ parameters:
     type: string
     default: "AzureCloud"
     description: "Used by Azure CLI to set the Azure environment"
+  - name: initial_admin_password
+    type: string
+    description: "Initial admin password for applicable instances"
 
   # the following are added automatically by the resource processor
   - name: id
@@ -106,8 +111,8 @@ outputs:
     applyTo:
       - install
       - upgrade
-  - name: aks_short_node_pool_id
-    description: "Short node pool ID"
+  - name: aks_subdomain_suffix
+    description: "AKS Sub Domain suffix"
     type: string
     applyTo:
       - install
@@ -133,6 +138,7 @@ install:
         workspace_id: ${ bundle.parameters.workspace_id }
         tre_id: ${ bundle.parameters.tre_id }
         tre_resource_id: ${ bundle.parameters.id }
+        environment_type: ${ bundle.parameters.workload_environment_type }
         parent_service_id: ${ bundle.parameters.parent_service_id }
         node_agent_pool_label: ${ bundle.parameters.workload_type }
         node_count: ${ bundle.parameters.node_count }
@@ -144,7 +150,7 @@ install:
         - name: aks_private_dns_zone
         - name: aks_cluster_name
         - name: aks_resource_group_name
-        - name: aks_short_node_pool_id
+        - name: aks_subdomain_suffix
   - az:
       description: "Set Azure Cloud Environment"
       arguments:
@@ -175,15 +181,26 @@ install:
         - "convert-kubeconfig"
         - "-l"
         - "azurecli"
+  - exec:
+      description: "Update values.yaml with AKS parameters"
+      command: /bin/bash
+      arguments:
+            - -c
+            - |
+              # Set environment variables for substitution
+              export AKS_AGENT_POOL="${{ bundle.parameters.workload_type }}${{ bundle.parameters.workload_environment_type }}"
+              export AKS_SUBDOMAIN_SUFFIX=$(cat /cnab/app/outputs/aks_subdomain_suffix)
+              export AKS_DNS_ZONE=$(cat /cnab/app/outputs/aks_private_dns_zone)
+              export INITIAL_ADMIN_PASSWORD=${{ bundle.parameters.initial_admin_password }}
+
+              envsubst < "./templates/${{ bundle.parameters.workload_type }}/values-template.yaml" > "./templates/${{ bundle.parameters.workload_type }}/values.yaml"
   - helm3:
       description: "Install AKS Azure platform resources"
-      name: ${ bundle.outputs.aks_short_node_pool_id }
+      name: ${ bundle.outputs.aks_subdomain_suffix }
       namespace: ${ bundle.parameters.workload_type }
       chart: "./templates/${ bundle.parameters.workload_type }"
-      set:
-        nodeSelector.agentpool: ${ bundle.parameters.workload_type }
-        name: ${ bundle.outputs.aks_short_node_pool_id }
-        dnsZone: ${ bundle.outputs.aks_private_dns_zone }
+      resetValues: true
+      wait: true
   - exec:
       description: "Get workload endpoints"
       command: /bin/bash
@@ -210,6 +227,7 @@ upgrade:
         workspace_id: ${ bundle.parameters.workspace_id }
         tre_id: ${ bundle.parameters.tre_id }
         tre_resource_id: ${ bundle.parameters.id }
+        environment_type: ${ bundle.parameters.workload_environment_type }
         parent_service_id: ${ bundle.parameters.parent_service_id }
         node_agent_pool_label: ${ bundle.parameters.workload_type }
         node_count: ${ bundle.parameters.node_count }
@@ -221,7 +239,7 @@ upgrade:
         - name: aks_private_dns_zone
         - name: aks_cluster_name
         - name: aks_resource_group_name
-        - name: aks_short_node_pool_id
+        - name: aks_subdomain_suffix
   - az:
       description: "Set Azure Cloud Environment"
       arguments:
@@ -252,15 +270,26 @@ upgrade:
         - "convert-kubeconfig"
         - "-l"
         - "azurecli"
+  - exec:
+      description: "Update values.yaml with AKS parameters"
+      command: /bin/bash
+      arguments:
+            - -c
+            - |
+              # Set environment variables for substitution
+              export AKS_AGENT_POOL="${{ bundle.parameters.workload_type }}${{ bundle.parameters.workload_environment_type }}"
+              export AKS_SUBDOMAIN_SUFFIX=$(cat /cnab/app/outputs/aks_subdomain_suffix)
+              export AKS_DNS_ZONE=$(cat /cnab/app/outputs/aks_private_dns_zone)
+              export INITIAL_ADMIN_PASSWORD=${{ bundle.parameters.initial_admin_password }}
+
+              envsubst < "./templates/${{ bundle.parameters.workload_type }}/values-template.yaml" > "./templates/${{ bundle.parameters.workload_type }}/values.yaml"
   - helm3:
       description: "Upgrade AKS Azure platform resources"
-      name: ${ bundle.outputs.aks_short_node_pool_id }
+      name: ${ bundle.outputs.aks_subdomain_suffix }
       namespace: ${ bundle.parameters.workload_type }
       chart: "./templates/${ bundle.parameters.workload_type }"
-      set:
-        nodeSelector.agentpool: ${ bundle.parameters.workload_type }
-        name: ${ bundle.outputs.aks_short_node_pool_id }
-        dnsZone: ${ bundle.outputs.aks_private_dns_zone }
+      resetValues: true
+      wait: true
   - exec:
       description: "Get workload endpoints"
       command: /bin/bash
@@ -306,8 +335,10 @@ uninstall:
         - "azurecli"
   - helm3:
       description: "Uninstall AKS Azure platform resources"
+      namespace: ${ bundle.parameters.workload_type }
       releases:
-        - ${ bundle.outputs.aks_short_node_pool_id }
+        - ${ bundle.outputs.aks_subdomain_suffix }
+      wait: true
   - terraform:
       description: "Tear down AKS prerequisites"
       backendConfig:

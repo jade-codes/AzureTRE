@@ -10,6 +10,6 @@ output "aks_resource_group_name" {
   value = data.azurerm_kubernetes_cluster.aks.resource_group_name
 }
 
-output "aks_short_node_pool_id" {
-  value = "${var.node_agent_pool_label}-${local.short_parent_id}"
+output "aks_subdomain_suffix" {
+  value = "${var.node_agent_pool_label}-${local.short_parent_id}-${var.environment_type}-${local.short_service_id}"
 }

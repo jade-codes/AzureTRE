@@ -1,3 +1,7 @@
+variable "environment_type" {
+  type = string
+}
+
 variable "node_agent_pool_label" {
   type = string
 }
