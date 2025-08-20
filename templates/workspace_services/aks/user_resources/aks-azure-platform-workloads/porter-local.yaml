@@ -31,9 +31,9 @@ install:
         - -c
         - |
             echo "Creating example outputs for AKS DNS Suffix and Private DNS Zone"
-            echo "example.com" > /cnab/app/outputs/aks_subdomain_suffix
+            echo "dsop-dev" > /cnab/app/outputs/aks_node_agent_pool_label
             echo "private.example.com" > /cnab/app/outputs/aks_private_dns_zone
-            echo "dsop-dev" > /cnab/app/outputs/aks_agent_pool
+            echo "dsop-dev" > /cnab/app/outputs/aks_node_agent_pool_label
   - exec:
       description: "Debug template processing"
       command: /bin/bash
@@ -41,15 +41,15 @@ install:
         - -c
         - |
             # Set environment variables for substitution
-            export AKS_AGENT_POOL=$(cat /cnab/app/outputs/aks_agent_pool)
-            export AKS_SUBDOMAIN_SUFFIX=$(cat /cnab/app/outputs/aks_subdomain_suffix)
+            export AKS_AGENT_POOL=$(cat /cnab/app/outputs/aks_node_agent_pool_label)
+            export AKS_SUBDOMAIN_SUFFIX=$(cat /cnab/app/outputs/aks_node_agent_pool_label)
             export AKS_DNS_ZONE=$(cat /cnab/app/outputs/aks_private_dns_zone)
-            export INITIAL_ADMIN_PASSWORD=${{ bundle.parameters.initial_admin_password }}
+            export AKS_INITIAL_ADMIN_PASSWORD=${{ bundle.parameters.initial_admin_password }}
 
             # Create values.yaml from template
-            envsubst < "./templates/${{ bundle.parameters.workload_type }}/values-template.yaml" > "./templates/${{ bundle.parameters.workload_type }}/values.yaml"
+            envsubst < "./manifests/${{ bundle.parameters.workload_type }}/values-template.yaml" > "./manifests/${{ bundle.parameters.workload_type }}/values.yaml"
 
-            cat "./templates/${{ bundle.parameters.workload_type }}/values.yaml"
+            cat "./manifests/${{ bundle.parameters.workload_type }}/values.yaml"
 
             echo "Updated values.yaml with:"
             echo "  Agent Pool: $AKS_AGENT_POOL"

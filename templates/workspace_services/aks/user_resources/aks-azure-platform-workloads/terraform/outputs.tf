@@ -11,5 +11,9 @@ output "aks_resource_group_name" {
 }
 
 output "aks_subdomain_suffix" {
-  value = "${var.node_agent_pool_label}-${local.short_parent_id}-${var.environment_type}-${local.short_service_id}"
+  value = local.subdomain_suffix
+}
+
+output "aks_node_agent_pool_label" {
+  value = local.node_agent_pool_label
 }

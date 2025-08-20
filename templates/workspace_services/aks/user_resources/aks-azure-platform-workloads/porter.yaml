@@ -58,6 +58,8 @@ parameters:
   - name: initial_admin_password
     type: string
     description: "Initial admin password for applicable instances"
+    sensitive: true
+    env: INITIAL_ADMIN_PASSWORD
 
   # the following are added automatically by the resource processor
   - name: id
@@ -96,30 +98,42 @@ outputs:
   - name: aks_private_dns_zone
     description: "AKS private DNS zone"
     type: string
+    default: ""
     applyTo:
       - install
       - upgrade
   - name: aks_cluster_name
     description: "AKS cluster name"
     type: string
+    default: ""
     applyTo:
       - install
       - upgrade
   - name: aks_resource_group_name
     description: "AKS resource group name"
     type: string
+    default: ""
+    applyTo:
+      - install
+      - upgrade
+  - name: aks_node_agent_pool_label
+    description: "AKS Node Agent Pool label"
+    type: string
+    default: ""
     applyTo:
       - install
       - upgrade
   - name: aks_subdomain_suffix
-    description: "AKS Sub Domain suffix"
+    description: "AKS Subdomain Suffix"
     type: string
+    default: ""
     applyTo:
       - install
       - upgrade
   - name: workload_endpoints
     description: "Workload endpoints for accessing deployed applications"
     type: string
+    default: ""
     applyTo:
       - install
       - upgrade
@@ -136,11 +150,11 @@ install:
         key: ${ bundle.parameters.id }
       vars:
         workspace_id: ${ bundle.parameters.workspace_id }
+        workload_type: ${ bundle.parameters.workload_type }
         tre_id: ${ bundle.parameters.tre_id }
         tre_resource_id: ${ bundle.parameters.id }
         environment_type: ${ bundle.parameters.workload_environment_type }
         parent_service_id: ${ bundle.parameters.parent_service_id }
-        node_agent_pool_label: ${ bundle.parameters.workload_type }
         node_count: ${ bundle.parameters.node_count }
         node_size: ${ bundle.parameters.node_size }
         node_autoscaling_enabled: ${ bundle.parameters.node_autoscaling_enabled }
@@ -150,6 +164,7 @@ install:
         - name: aks_private_dns_zone
         - name: aks_cluster_name
         - name: aks_resource_group_name
+        - name: aks_node_agent_pool_label
         - name: aks_subdomain_suffix
   - az:
       description: "Set Azure Cloud Environment"
@@ -188,18 +203,19 @@ install:
             - -c
             - |
               # Set environment variables for substitution
-              export AKS_AGENT_POOL="${{ bundle.parameters.workload_type }}${{ bundle.parameters.workload_environment_type }}"
+              export AKS_AGENT_POOL=$(cat /cnab/app/outputs/aks_node_agent_pool_label)
               export AKS_SUBDOMAIN_SUFFIX=$(cat /cnab/app/outputs/aks_subdomain_suffix)
               export AKS_DNS_ZONE=$(cat /cnab/app/outputs/aks_private_dns_zone)
-              export INITIAL_ADMIN_PASSWORD=${{ bundle.parameters.initial_admin_password }}
+              export AKS_INITIAL_ADMIN_PASSWORD=${{ bundle.parameters.initial_admin_password }}
 
-              envsubst < "./templates/${{ bundle.parameters.workload_type }}/values-template.yaml" > "./templates/${{ bundle.parameters.workload_type }}/values.yaml"
+              envsubst < "./manifests/${{ bundle.parameters.workload_type }}/values-template.yaml" > "./manifests/${{ bundle.parameters.workload_type }}/values.yaml"
   - helm3:
       description: "Install AKS Azure platform resources"
-      name: ${ bundle.outputs.aks_subdomain_suffix }
+      name: ${ bundle.outputs.aks_node_agent_pool_label }
       namespace: ${ bundle.parameters.workload_type }
-      chart: "./templates/${ bundle.parameters.workload_type }"
+      chart: "./manifests/${ bundle.parameters.workload_type }"
       resetValues: true
+      reuseValues: false
       wait: true
   - exec:
       description: "Get workload endpoints"
@@ -225,11 +241,11 @@ upgrade:
         key: ${ bundle.parameters.id }
       vars:
         workspace_id: ${ bundle.parameters.workspace_id }
+        workload_type: ${ bundle.parameters.workload_type }
         tre_id: ${ bundle.parameters.tre_id }
         tre_resource_id: ${ bundle.parameters.id }
         environment_type: ${ bundle.parameters.workload_environment_type }
         parent_service_id: ${ bundle.parameters.parent_service_id }
-        node_agent_pool_label: ${ bundle.parameters.workload_type }
         node_count: ${ bundle.parameters.node_count }
         node_size: ${ bundle.parameters.node_size }
         node_autoscaling_enabled: ${ bundle.parameters.node_autoscaling_enabled }
@@ -239,6 +255,7 @@ upgrade:
         - name: aks_private_dns_zone
         - name: aks_cluster_name
         - name: aks_resource_group_name
+        - name: aks_node_agent_pool_label
         - name: aks_subdomain_suffix
   - az:
       description: "Set Azure Cloud Environment"
@@ -277,18 +294,19 @@ upgrade:
             - -c
             - |
               # Set environment variables for substitution
-              export AKS_AGENT_POOL="${{ bundle.parameters.workload_type }}${{ bundle.parameters.workload_environment_type }}"
+              export AKS_AGENT_POOL=$(cat /cnab/app/outputs/aks_node_agent_pool_label)
               export AKS_SUBDOMAIN_SUFFIX=$(cat /cnab/app/outputs/aks_subdomain_suffix)
               export AKS_DNS_ZONE=$(cat /cnab/app/outputs/aks_private_dns_zone)
-              export INITIAL_ADMIN_PASSWORD=${{ bundle.parameters.initial_admin_password }}
+              export AKS_INITIAL_ADMIN_PASSWORD=${{ bundle.parameters.initial_admin_password }}
 
-              envsubst < "./templates/${{ bundle.parameters.workload_type }}/values-template.yaml" > "./templates/${{ bundle.parameters.workload_type }}/values.yaml"
+              envsubst < "./manifests/${{ bundle.parameters.workload_type }}/values-template.yaml" > "./manifests/${{ bundle.parameters.workload_type }}/values.yaml"
   - helm3:
       description: "Upgrade AKS Azure platform resources"
-      name: ${ bundle.outputs.aks_subdomain_suffix }
+      name: ${ bundle.outputs.aks_node_agent_pool_label }
       namespace: ${ bundle.parameters.workload_type }
-      chart: "./templates/${ bundle.parameters.workload_type }"
+      chart: "./manifests/${ bundle.parameters.workload_type }"
       resetValues: true
+      reuseValues: false
       wait: true
   - exec:
       description: "Get workload endpoints"
@@ -337,7 +355,7 @@ uninstall:
       description: "Uninstall AKS Azure platform resources"
       namespace: ${ bundle.parameters.workload_type }
       releases:
-        - ${ bundle.outputs.aks_subdomain_suffix }
+        - ${ bundle.outputs.aks_node_agent_pool_label }
       wait: true
   - terraform:
       description: "Tear down AKS prerequisites"
@@ -350,10 +368,11 @@ uninstall:
         key: ${ bundle.parameters.id }
       vars:
         workspace_id: ${ bundle.parameters.workspace_id }
+        workload_type: ${ bundle.parameters.workload_type }
         tre_id: ${ bundle.parameters.tre_id }
         tre_resource_id: ${ bundle.parameters.id }
+        environment_type: ${ bundle.parameters.workload_environment_type }
         parent_service_id: ${ bundle.parameters.parent_service_id }
-        node_agent_pool_label: ${ bundle.parameters.workload_type }
         node_count: ${ bundle.parameters.node_count }
         node_size: ${ bundle.parameters.node_size }
         node_autoscaling_enabled: ${ bundle.parameters.node_autoscaling_enabled }

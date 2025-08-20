@@ -39,6 +39,7 @@
       "enum": ["Development", "Staging", "Production"]
     },
     "initial_admin_password": {
+      "$id":"#/properties/initial_admin_password",
       "type": "string",
       "title": "Initial Admin Password",
       "description": "Password for the initial admin user of the workload.",
@@ -102,6 +103,9 @@
     },
     "workload_type": {
       "classNames": "tre-hidden"
+    },
+    "initial_admin_password": {
+      "ui:widget": "password"
     }
   },
   "allOf": [

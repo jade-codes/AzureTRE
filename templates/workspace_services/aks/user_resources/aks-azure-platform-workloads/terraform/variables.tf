@@ -2,10 +2,6 @@ variable "environment_type" {
   type = string
 }
 
-variable "node_agent_pool_label" {
-  type = string
-}
-
 variable "node_count" {
   type = number
 }
@@ -39,5 +35,9 @@ variable "tre_resource_id" {
 }
 
 variable "workspace_id" {
+  type = string
+}
+
+variable "workload_type" {
   type = string
 }

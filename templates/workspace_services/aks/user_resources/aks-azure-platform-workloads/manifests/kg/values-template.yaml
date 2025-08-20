@@ -1,0 +1,25 @@
+apache-jena-fuseki:
+  nodeSelector:
+      agentpool: ${AKS_AGENT_POOL}
+
+  ingress:
+      enabled: true
+      className: "webapprouting.kubernetes.azure.com"
+      hosts:
+        - host: "ajf-${AKS_SUBDOMAIN_SUFFIX}.${AKS_DNS_ZONE}"
+          paths:
+            - path: /
+              pathType: "Prefix"
+
+  persistence:
+    enabled: true
+    storageClass: "managed-csi"
+    size: "5Gi"
+
+  service:
+    type: ClusterIP
+    port: 3030
+
+  fuseki:
+    admin:
+      password: ${AKS_INITIAL_ADMIN_PASSWORD}

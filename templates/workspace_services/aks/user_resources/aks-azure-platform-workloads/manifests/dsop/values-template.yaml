@@ -8,7 +8,7 @@ jenkins:
   controller:
     admin:
       username: "admin"
-      password: ${INITIAL_ADMIN_PASSWORD}
+      password: ${AKS_INITIAL_ADMIN_PASSWORD}
 
     nodeSelector:
       agentpool: ${AKS_AGENT_POOL}
@@ -16,7 +16,7 @@ jenkins:
     ingress:
       enabled: true
       ingressClassName: "webapprouting.kubernetes.azure.com"
-      hostName: "jenkins-${AKS_SUBDOMAIN_SUFFIX }.${AKS_DNS_ZONE}"
+      hostName: "jenkins-${AKS_SUBDOMAIN_SUFFIX}.${AKS_DNS_ZONE}"
 
     JCasC:
       enabled: true
@@ -29,7 +29,7 @@ jenkins:
                 allowsSignup: false
                 users:
                   - id: "admin"
-                    password: ${INITIAL_ADMIN_PASSWORD}
+                    password: ${AKS_INITIAL_ADMIN_PASSWORD}
             authorizationStrategy:
               loggedInUsersCanDoAnything:
                 allowAnonymousRead: false
@@ -64,18 +64,15 @@ nexus-repository-manager:
   ingress:
     enabled: true
     ingressClassName: "webapprouting.kubernetes.azure.com"
-    hostRepo: "nexus-${AKS_SUBDOMAIN_SUFFIX }.${AKS_DNS_ZONE}"
+    hostRepo: "nexus-${AKS_SUBDOMAIN_SUFFIX}.${AKS_DNS_ZONE}"
 
 gitea:
   enabled: true
 
   gitea:
-    nodeSelector:
-      agentpool: ${AKS_AGENT_POOL}
-
     admin:
       username: gitea-admin
-      password: ${INITIAL_ADMIN_PASSWORD}
+      password: ${AKS_INITIAL_ADMIN_PASSWORD}
       email: gitea@test.com
 
     config:
@@ -88,16 +85,22 @@ gitea:
       queue:
         TYPE: leveldb
 
+  nodeSelector:
+    agentpool: ${AKS_AGENT_POOL}
+
   persistence:
     enabled: true
+    claimName: ${AKS_AGENT_POOL}-gitea-data
     storageClass: "managed-csi"
-    storageSize: 5Gi
+    size: 5Gi
+    annotations:
+      helm.sh/resource-policy: null
 
   ingress:
     enabled: true
     className: "webapprouting.kubernetes.azure.com"
     hosts:
-      - host: "gitea-${AKS_SUBDOMAIN_SUFFIX }.${AKS_DNS_ZONE}"
+      - host: "gitea-${AKS_SUBDOMAIN_SUFFIX}.${AKS_DNS_ZONE}"
         paths:
           - path: /
             pathType: "Prefix"
