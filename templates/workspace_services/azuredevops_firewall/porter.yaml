@@ -1,7 +1,7 @@
 ---
 schemaVersion: 1.0.0
-name: tre-workspace-service-azuredevops
-version: 1.0.7
+name: tre-workspace-service-azdo-firewall
+version: 1.0.1
 description: "An Azure DevOps workspace service"
 registry: azuretre
 dockerfile: Dockerfile.tmpl
@@ -46,6 +46,18 @@ parameters:
     type: string
     default: "public"
 
+outputs:
+  - name: services_addresses
+    type: string
+    applyTo:
+      - install
+      - upgrade
+  - name: azdo_source_addresses
+    type: string
+    applyTo:
+      - install
+      - upgrade
+
 mixins:
   - exec
   - terraform:
@@ -65,7 +77,10 @@ install:
         resource_group_name: ${ bundle.parameters.tfstate_resource_group_name }
         storage_account_name: ${ bundle.parameters.tfstate_storage_account_name }
         container_name: ${ bundle.parameters.tfstate_container_name }
-        key: tre-workspace-service-openai-${ bundle.parameters.id }
+        key: tre-workspace-service-azure-devops-firewall-${ bundle.parameters.id }
+      outputs:
+        - name: services_addresses
+        - name: azdo_source_addresses
 upgrade:
   - terraform:
       description: "Upgrade Azure DevOps workspace service"
@@ -80,7 +95,10 @@ upgrade:
         resource_group_name: ${ bundle.parameters.tfstate_resource_group_name }
         storage_account_name: ${ bundle.parameters.tfstate_storage_account_name }
         container_name: ${ bundle.parameters.tfstate_container_name }
-        key: tre-workspace-service-openai-${ bundle.parameters.id }
+        key: tre-workspace-service-azure-devops-firewall-${ bundle.parameters.id }
+      outputs:
+        - name: services_addresses
+        - name: azdo_source_addresses
 
 uninstall:
   - terraform:
@@ -96,4 +114,4 @@ uninstall:
         resource_group_name: ${ bundle.parameters.tfstate_resource_group_name }
         storage_account_name: ${ bundle.parameters.tfstate_storage_account_name }
         container_name: ${ bundle.parameters.tfstate_container_name }
-        key: tre-workspace-service-openai-${ bundle.parameters.id }
+        key: tre-workspace-service-azure-devops-firewall-${ bundle.parameters.id }

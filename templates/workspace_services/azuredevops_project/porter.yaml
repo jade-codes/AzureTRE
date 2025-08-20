@@ -1,0 +1,108 @@
+---
+schemaVersion: 1.0.0
+name: tre-workspace-service-azdo-project
+version: 1.0.18
+description: "An Azure DevOps Projects workspace service"
+registry: azuretre
+dockerfile: Dockerfile.tmpl
+
+credentials:
+  - name: azure_tenant_id
+    env: ARM_TENANT_ID
+  - name: azure_subscription_id
+    env: ARM_SUBSCRIPTION_ID
+  - name: azure_client_id
+    env: ARM_CLIENT_ID
+  - name: azure_client_secret
+    env: ARM_CLIENT_SECRET
+parameters:
+  - name: workspace_id
+    type: string
+  - name: tre_id
+    type: string
+
+  # the following are added automatically by the resource processor
+  - name: id
+    type: string
+    description: "Resource ID"
+    env: id
+  - name: tfstate_resource_group_name
+    type: string
+    description: "Resource group containing the Terraform state storage account"
+  - name: tfstate_storage_account_name
+    type: string
+    description: "The name of the Terraform state storage account"
+  - name: tfstate_container_name
+    env: tfstate_container_name
+    type: string
+    default: "tfstate"
+    description: "The name of the Terraform state storage container"
+  - name: arm_use_msi
+    env: ARM_USE_MSI
+    type: boolean
+    default: false
+  - name: arm_environment
+    env: ARM_ENVIRONMENT
+    type: string
+    default: "public"
+  - name: azure_devops_organisation
+    env: AZDO_ORG
+    type: string
+  - name: azure_devops_project
+    env: AZDO_PROJECT
+    type: string
+
+mixins:
+  - exec
+  - terraform:
+      clientVersion: 1.9.8
+
+install:
+  - terraform:
+      description: "Deploy Azure DevOps workspace service"
+      vars:
+        workspace_id: ${ bundle.parameters.workspace_id }
+        tre_id: ${ bundle.parameters.tre_id }
+        tre_resource_id: ${ bundle.parameters.id }
+        arm_environment: ${ bundle.parameters.arm_environment }
+        azure_devops_organisation: ${ bundle.parameters.azure_devops_organisation }
+        azure_devops_project: ${ bundle.parameters.azure_devops_project }
+        azdo_client_id: ${ bundle.credentials.azure_client_id }
+      backendConfig:
+        use_azuread_auth: "true"
+        use_oidc: "true"
+        resource_group_name: ${ bundle.parameters.tfstate_resource_group_name }
+        storage_account_name: ${ bundle.parameters.tfstate_storage_account_name }
+        container_name: ${ bundle.parameters.tfstate_container_name }
+        key: tre-workspace-service-azure-devops-project-${ bundle.parameters.id }
+
+upgrade:
+  - exec:
+      description: "Debug Client"
+      command: echo
+      arguments:
+        - "Using Service Principal $ARM_CLIENT_ID"
+  - terraform:
+      description: "Upgrade Azure DevOps workspace service"
+      vars:
+        workspace_id: ${ bundle.parameters.workspace_id }
+        tre_id: ${ bundle.parameters.tre_id }
+        tre_resource_id: ${ bundle.parameters.id }
+        arm_environment: ${ bundle.parameters.arm_environment }
+        azure_devops_organisation: ${ bundle.parameters.azure_devops_organisation }
+        azure_devops_project: ${ bundle.parameters.azure_devops_project }
+        azdo_client_id: ${ bundle.credentials.azure_client_id }
+      backendConfig:
+        use_azuread_auth: "true"
+        use_oidc: "true"
+        resource_group_name: ${ bundle.parameters.tfstate_resource_group_name }
+        storage_account_name: ${ bundle.parameters.tfstate_storage_account_name }
+        container_name: ${ bundle.parameters.tfstate_container_name }
+        key: tre-workspace-service-azure-devops-project-${ bundle.parameters.id }
+
+uninstall:
+  - exec:
+      description: "Uninstall placeholder"
+      command: echo
+      arguments:
+        - "WARNING: The project will not be removed from Azure DevOps after this service is removed"

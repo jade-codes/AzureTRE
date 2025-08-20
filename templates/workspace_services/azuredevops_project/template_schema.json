@@ -2,22 +2,22 @@
   "$schema": "http://json-schema.org/draft-07/schema",
   "$id": "https://github.com/microsoft/AzureTRE/templates/workspace_services/sql/template_schema.json",
   "type": "object",
-  "title": "Azure DevOps Workspace Service",
-  "description": "Provides access to Azure DevOps within the workspace",
+  "title": "Azure DevOps Project Workspace Service",
+  "description": "Create a project in Azure DevOps",
   "required": [],
   "properties": {
     "display_name": {
       "type": "string",
       "title": "Name for the workspace service",
       "description": "The name of the workspace service to be displayed to users",
-      "default": "Azure DevOps",
+      "default": "Azure DevOps Project",
       "updateable": true
     },
     "description": {
       "type": "string",
       "title": "Description of the workspace service",
       "description": "Description of the workspace service",
-      "default": "Access Azure DevOps Services from the workspace",
+      "default": "Create Azure DevOps Project from the workspace",
       "updateable": true
     },
     "overview": {
@@ -26,6 +26,21 @@
       "description": "Long form description of the workspace service, in markdown syntax",
       "default": "Azure DevOps Services is Microsoft’s cloud-based platform for managing the entire software delivery lifecycle. It provides a unified toolset for planning, building, testing, and delivering applications, all backed by enterprise-grade security and scalability.",
       "updateable": true
+    },
+    "azure_devops_organisation": {
+      "$id": "#/properties/azure_devops_organisation",
+      "type": "string",
+      "title": "Azure DevOps Organisation",
+      "description": "The name of the Azure DevOps Organisation to create the project in.",
+      "default": "sl-sfp",
+      "updateable": false
+    },
+    "azure_devops_project": {
+      "$id": "#/properties/azure_devops_project",
+      "type": "string",
+      "title": "Azure DevOps Project",
+      "description": "The name of the Azure DevOps Project to create.",
+      "updateable": false
     }
   }
 }

@@ -1,0 +1,247 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://github.com/microsoft/AzureTRE/templates/workspace_services/sql/template_schema.json",
+  "type": "object",
+  "title": "Azure DevOps Workspace Firewall Service",
+  "description": "Provides access to Azure DevOps within the workspace",
+  "required": [],
+  "properties": {
+    "display_name": {
+      "type": "string",
+      "title": "Name for the workspace service",
+      "description": "The name of the workspace service to be displayed to users",
+      "default": "Azure DevOps Firewall",
+      "updateable": true
+    },
+    "description": {
+      "type": "string",
+      "title": "Description of the workspace service",
+      "description": "Description of the workspace service",
+      "default": "Access Azure DevOps Services from the workspace",
+      "updateable": true
+    },
+    "overview": {
+      "type": "string",
+      "title": "Workspace Service Overview",
+      "description": "Long form description of the workspace service, in markdown syntax",
+      "default": "Azure DevOps Services is Microsoft’s cloud-based platform for managing the entire software delivery lifecycle. It provides a unified toolset for planning, building, testing, and delivering applications, all backed by enterprise-grade security and scalability.",
+      "updateable": true
+    }
+  },
+  "pipeline": {
+    "install": [
+      {
+        "stepId": "main"
+      },
+      {
+        "stepId": "e5fd555b-7a8f-47b2-aaec-d2784c1aabdf",
+        "stepTitle": "Add firewall rules for Azure DevOps",
+        "resourceTemplateName": "tre-shared-service-firewall",
+        "resourceType": "shared-service",
+        "resourceAction": "upgrade",
+        "properties": [
+          {
+            "name": "network_rule_collections",
+            "type": "array",
+            "arraySubstitutionAction": "replace",
+            "arrayMatchField": "name",
+            "value": {
+              "name": "nrc_svc_{{ resource.id }}_azdo",
+              "action": "Allow",
+              "rules": [
+                {
+                  "name": "ado-callbacks-https",
+                  "description": "Allow inbound access to AAD",
+                  "source_addresses": "{{ resource.properties.azdo_source_addresses }}",
+                  "destination_addresses": "{{ resource.properties.services_addresses }}",
+                  "destination_ports": [
+                    "443"
+                  ],
+                  "protocols": [
+                    "TCP"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "name": "rule_collections",
+            "type": "array",
+            "arraySubstitutionAction": "replace",
+            "arrayMatchField": "name",
+            "value": {
+              "name": "arc_svc_{{ resource.id }}_azdo",
+              "action": "Allow",
+              "rules": [
+                {
+                  "name": "microsoft-azdo",
+                  "description": "Allow AzDO FQDNs",
+                  "source_addresses": "{{ resource.properties.services_addresses }}",
+                  "target_fqdns": [
+                    "dev.azure.com",
+                    "*.dev.azure.com",
+                    "vsrm.dev.azure.com",
+                    "download.agent.dev.azure.com",
+                    "cdn.vsassets.io",
+                    "*.vsassets.io",
+                    "*.gallerycdn.vsassets.io",
+                    "login.microsoftonline.com",
+                    "management.azure.com",
+                    "management.core.windows.net",
+                    "static2.sharepointonline.com",
+                    "*.vssps.visualstudio.com",
+                    "*.vsblob.visualstudio.com",
+                    "*.vssps.visualstudio.com",
+                    "*.vstmr.visualstudio.com",
+                    "aexprodea1.vsaex.visualstudio.com",
+                    "*.vstmrblob.vsassets.io",
+                    "visualstudio.com",
+                    "aadcdn.msauth.net",
+                    "amcdn.msftauth.net",
+                    "azurecomcdn.azureedge.net",
+                    "login.live.com",
+                    "logincdn.msauth.net",
+                    "js.monitor.azure.com"
+                  ],
+                  "protocols": [
+                    {
+                      "port": "80",
+                      "type": "Http"
+                    },
+                    {
+                      "port": "443",
+                      "type": "Https"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "upgrade": [
+      {
+        "stepId": "main"
+      },
+      {
+        "stepId": "4bab42f6-79f0-4142-a184-04fd1cc0c32c",
+        "stepTitle": "Add firewall rules for Azure DevOps",
+        "resourceTemplateName": "tre-shared-service-firewall",
+        "resourceType": "shared-service",
+        "resourceAction": "upgrade",
+        "properties": [
+          {
+            "name": "network_rule_collections",
+            "type": "array",
+            "arraySubstitutionAction": "replace",
+            "arrayMatchField": "name",
+            "value": {
+              "name": "nrc_svc_{{ resource.id }}_azdo",
+              "action": "Allow",
+              "rules": [
+                {
+                  "name": "ado-callbacks-https",
+                  "description": "Allow inbound access to AAD",
+                  "source_addresses": "{{ resource.properties.azdo_source_addresses }}",
+                  "destination_addresses": "{{ resource.properties.services_addresses }}",
+                  "destination_ports": [
+                    "443"
+                  ],
+                  "protocols": [
+                    "TCP"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "name": "rule_collections",
+            "type": "array",
+            "arraySubstitutionAction": "replace",
+            "arrayMatchField": "name",
+            "value": {
+              "name": "arc_svc_{{ resource.id }}_azdo",
+              "action": "Allow",
+              "rules": [
+                {
+                  "name": "microsoft-azdo",
+                  "description": "Allow AzDO FQDNs",
+                  "source_addresses": "{{ resource.properties.services_addresses }}",
+                  "target_fqdns": [
+                    "dev.azure.com",
+                    "*.dev.azure.com",
+                    "vsrm.dev.azure.com",
+                    "download.agent.dev.azure.com",
+                    "cdn.vsassets.io",
+                    "*.vsassets.io",
+                    "*.gallerycdn.vsassets.io",
+                    "login.microsoftonline.com",
+                    "management.azure.com",
+                    "management.core.windows.net",
+                    "static2.sharepointonline.com",
+                    "*.vssps.visualstudio.com",
+                    "*.vsblob.visualstudio.com",
+                    "*.vssps.visualstudio.com",
+                    "*.vstmr.visualstudio.com",
+                    "aexprodea1.vsaex.visualstudio.com",
+                    "*.vstmrblob.vsassets.io",
+                    "visualstudio.com",
+                    "aadcdn.msauth.net",
+                    "amcdn.msftauth.net",
+                    "azurecomcdn.azureedge.net",
+                    "login.live.com",
+                    "logincdn.msauth.net",
+                    "js.monitor.azure.com"
+                  ],
+                  "protocols": [
+                    {
+                      "port": "80",
+                      "type": "Http"
+                    },
+                    {
+                      "port": "443",
+                      "type": "Https"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "uninstall": [
+      {
+        "stepId": "ed86f708-d584-4536-aef4-248726464d69",
+        "stepTitle": "Remove firewall rules for Azure DevOps",
+        "resourceTemplateName": "tre-shared-service-firewall",
+        "resourceType": "shared-service",
+        "resourceAction": "upgrade",
+        "properties": [
+          {
+            "name": "network_rule_collections",
+            "type": "array",
+            "arraySubstitutionAction": "remove",
+            "arrayMatchField": "name",
+            "value": {
+              "name": "nrc_svc_{{ resource.id }}_azdo"
+            }
+          },
+          {
+            "name": "rule_collections",
+            "type": "array",
+            "arraySubstitutionAction": "remove",
+            "arrayMatchField": "name",
+            "value": {
+              "name": "arc_svc_{{ resource.id }}_azdo"
+            }
+          }
+        ]
+      },
+      {
+        "stepId": "main"
+      }
+    ]
+  }
+}

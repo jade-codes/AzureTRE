@@ -2,7 +2,7 @@
   "schemaType": "ParameterSet",
   "schemaVersion": "1.0.0",
   "namespace": "",
-  "name": "tre-workspace-service-azuredevops",
+  "name": "tre-workspace-service-azdo-project",
   "parameters": [
     {
       "name": "tre_id",
@@ -44,6 +44,18 @@
       "name": "arm_environment",
       "source": {
         "env": "ARM_ENVIRONMENT"
+      }
+    },
+    {
+      "name": "azure_devops_organisation",
+      "source": {
+        "env": "AZDO_ORG"
+      }
+    },
+    {
+      "name": "azure_devops_project",
+      "source": {
+        "env": "AZDO_PROJECT"
       }
     }
   ]
