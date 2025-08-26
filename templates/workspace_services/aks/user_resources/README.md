@@ -4,9 +4,9 @@ This folder contains user resources that can be deployed to the AKS workspace se
 
 ## Available User Resources
 
-### Platform Resources (aks-azure-platform-workloads)
+### Workload Resources (aks-azure-workloads)
 
-The platform workloads template provides predefined workload configurations optimised for different research scenarios:
+The workloads template provides predefined workload configurations optimised for different research scenarios:
 
 #### DevSecOps Workload
 - **Node Size**: Standard_DS2_v2 (2 vCPU, 7 GB RAM)
@@ -14,7 +14,7 @@ The platform workloads template provides predefined workload configurations opti
 - **Autoscaling**: Enabled (1-5 nodes)
 - **Use Case**: Development, security, and operations workflows including CI/CD pipelines, code repositories, and security scanning tools
 
-#### AI Model Workload  
+#### AI Models Workload  
 - **Node Size**: Standard_NC6 (6 vCPU, 56 GB RAM, GPU-enabled)
 - **Default Node Count**: 3
 - **Autoscaling**: Enabled (1-5 nodes)
@@ -42,7 +42,7 @@ Each user resource template follows a consistent layout:
 ## Configuration Parameters
 
 ### Required Parameters
-- `workload_name`: Select from available workload types (DevSecOps, AI Model, Knowledge Graph)
+- `workload_category`: Select from available workload categories (DevSecOps, AI Models, Knowledge Graph)
 
 ### Optional Parameters (Auto-configured per workload)
 - `display_name`: Display name for the workload (default: "My Workload")

@@ -38,9 +38,9 @@ When deploying an AKS service into a workspace the following properties need to 
 
 This AKS workspace service supports various user resources that can be deployed to the cluster:
 
-- **Platform Resources**: Predefined workload configurations for DevSecOps, AI/ML, and Knowledge Graph scenarios
+- **Workload Resources**: Predefined workload configurations for DevSecOps, AI/ML, and Knowledge Graph scenarios
 
-See the [AKS Platform Workloads documentation](../user-resources/platform-workloads.md) for more details.
+See the [AKS Workloads documentation](../user-resources/workloads.md) for more details.
 
 ## Architecture
 

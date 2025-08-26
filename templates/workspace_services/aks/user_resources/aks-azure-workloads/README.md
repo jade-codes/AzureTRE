@@ -1,6 +1,6 @@
-# AKS Azure Platform Workloads User Resource
+# AKS Azure Workloads User Resource
 
-This Porter bundle deploys platform workloads (Jenkins, Gitea, Nexus) on an existing AKS cluster within Azure TRE.
+This Porter bundle deploys workloads (Jenkins, Gitea, Nexus) on an existing AKS cluster within Azure TRE.
 
 ## Local Testing
 

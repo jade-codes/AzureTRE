@@ -1,8 +1,8 @@
 ---
 schemaVersion: 1.0.0
 name: tre-service-aks
-version: 0.0.3
-description: "An Azure Kubernetes workspace service"
+version: 1.0.0
+description: "An Azure Kubernetes workloads workspace service"
 dockerfile: Dockerfile.tmpl
 registry: azuretre
 
@@ -107,7 +107,7 @@ outputs:
 
 install:
   - terraform:
-      description: "Deploy AKS workspace service"
+      description: "Deploy the workloads workspace service"
       vars:
         workspace_id: ${ bundle.parameters.workspace_id }
         tre_id: ${ bundle.parameters.tre_id }
@@ -134,7 +134,7 @@ install:
 
 upgrade:
   - terraform:
-      description: "Deploy AKS workspace service"
+      description: "Deploy the workloads workspace service"
       vars:
         workspace_id: ${ bundle.parameters.workspace_id }
         tre_id: ${ bundle.parameters.tre_id }
@@ -161,7 +161,7 @@ upgrade:
 
 uninstall:
   - terraform:
-      description: "Tear down AKS workspace service"
+      description: "Tear down the workloads workspace service"
       vars:
         workspace_id: ${ bundle.parameters.workspace_id }
         tre_id: ${ bundle.parameters.tre_id }

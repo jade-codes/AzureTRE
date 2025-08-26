@@ -1,5 +1,5 @@
 apiVersion: v2
-name: workspace-service-aks-devsecops
+name: workload-dsop
 version: "1.0.5"
 description: Helm chart for AKS workspace service with DevSecOps tools (Gitea, Jenkins, Nexus)
 appVersion: "1.0.0"

@@ -9,4 +9,4 @@ dependencies:
   repository: https://dl.gitea.io/charts
   version: 9.6.1
 digest: sha256:96fca5b2e07e528f22b0f38da39609dd86781d226a5a992f2da90b63f23300fa
-generated: "2025-08-14T00:44:02.887479652+01:00"
+generated: "2025-08-22T11:04:18.810696409Z"

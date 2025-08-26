@@ -34,7 +34,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     network_data_plane  = "cilium"
     network_plugin_mode = "overlay"
     load_balancer_sku   = "standard"
-    outbound_type       = "loadBalancer"
+    outbound_type       = "userDefinedRouting"
     pod_cidr            = "192.168.0.0/16"
     service_cidr        = "192.169.0.0/16"
     dns_service_ip      = "192.169.0.10"

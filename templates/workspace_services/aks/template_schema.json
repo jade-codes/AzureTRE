@@ -1,43 +1,49 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Workspace Platform",
-  "description": "Parameters for deploying the platform.",
+  "title": "Workloads Service",
+  "description": "Parameters for deploying the workloads service .",
   "type": "object",
   "properties": {
     "display_name": {
       "type": "string",
-      "title": "Name for the Workspace Platform",
-      "description": "The name of the workspace platform to be displayed to users.",
-      "default": "Workload Platform",
+      "title": "Name for the Workloads Service",
+      "description": "The name of the workloads service to be displayed to users.",
+      "default": "Workloads",
       "updateable": true
     },
     "description": {
       "type": "string",
-      "title": "Description of the Workspace Platform",
-      "description": "Describe what this workspace platform does.",
-      "default": "A managed platform for deploying, scaling, and managing containerised applications and microservices.",
+      "title": "Description of the Workloads Service",
+      "description": "Describe what this workloads service does.",
+      "default": "A managed service for deploying, scaling, and managing containerised applications and microservices.",
       "updateable": true
     },
     "overview": {
       "type": "string",
-      "title": "Workspace Platform Overview",
-      "description": "Long form description of the workspace platform, in markdown syntax",
-      "default": "The Workload Platform provides a managed environment for deploying and orchestrating containerised applications. It offers automated scaling, load balancing, and service discovery for your workloads.",
+      "title": "Workloads Service Overview",
+      "description": "Long form description of the workloads service, in markdown syntax",
+      "default": "The Workloads Service provides a managed environment for deploying and orchestrating containerised applications. It offers automated scaling, load balancing, and service discovery for your workloads.",
       "updateable": true
     },
     "workspace_owners_group_id": {
       "type": "string",
       "title": "Workspace Owners Group Object ID",
-      "description": "The object ID of the Azure AD group that will be granted admin access to the workspace platform."
+      "description": "The object ID of the Azure AD group that will be granted admin access to the workloads service."
     }
   },
-  "required": [ "workspace_owners_group_id"],
+  "required": [
+    "workspace_owners_group_id"
+  ],
   "uiSchema": {
-    "workspace_owners_group_id": { "ui:widget": "text" }
+    "workspace_owners_group_id": {
+      "ui:widget": "text"
+    }
   },
   "pipeline": {
     "install": [
-      { "stepId": "main" },
+      {
+        "stepId": "main"
+      },
       {
         "stepId": "aks-firewall-rules-install",
         "stepTitle": "Add network firewall rules for AKS",
@@ -58,9 +64,15 @@
                   "name": "AzureAD",
                   "description": "AAD access for authNZ",
                   "source_addresses": "{{ resource.properties.workspace_address_space }}",
-                  "destination_addresses": ["AzureActiveDirectory"],
-                  "destination_ports": ["*"],
-                  "protocols": ["TCP"]
+                  "destination_addresses": [
+                    "AzureActiveDirectory"
+                  ],
+                  "destination_ports": [
+                    "*"
+                  ],
+                  "protocols": [
+                    "TCP"
+                  ]
                 }
               ]
             }
@@ -78,8 +90,15 @@
                   "name": "AAD CDN",
                   "description": "AAD CDN",
                   "source_addresses": "{{ resource.properties.workspace_address_space }}",
-                  "target_fqdns": ["aadcdn.msftauth.net"],
-                  "protocols": [ { "port": "443", "type": "Https" } ]
+                  "target_fqdns": [
+                    "aadcdn.msftauth.net"
+                  ],
+                  "protocols": [
+                    {
+                      "port": "443",
+                      "type": "Https"
+                    }
+                  ]
                 }
               ]
             }
@@ -88,7 +107,9 @@
       }
     ],
     "upgrade": [
-      { "stepId": "main" },
+      {
+        "stepId": "main"
+      },
       {
         "stepId": "aks-firewall-rules-upgrade",
         "stepTitle": "Add network firewall rules for AKS",
@@ -109,9 +130,15 @@
                   "name": "AzureAD",
                   "description": "AAD access for authNZ",
                   "source_addresses": "{{ resource.properties.workspace_address_space }}",
-                  "destination_addresses": ["AzureActiveDirectory"],
-                  "destination_ports": ["*"],
-                  "protocols": ["TCP"]
+                  "destination_addresses": [
+                    "AzureActiveDirectory"
+                  ],
+                  "destination_ports": [
+                    "*"
+                  ],
+                  "protocols": [
+                    "TCP"
+                  ]
                 }
               ]
             }
@@ -129,8 +156,15 @@
                   "name": "AAD CDN",
                   "description": "AAD CDN",
                   "source_addresses": "{{ resource.properties.workspace_address_space }}",
-                  "target_fqdns": ["aadcdn.msftauth.net"],
-                  "protocols": [ { "port": "443", "type": "Https" } ]
+                  "target_fqdns": [
+                    "aadcdn.msftauth.net"
+                  ],
+                  "protocols": [
+                    {
+                      "port": "443",
+                      "type": "Https"
+                    }
+                  ]
                 }
               ]
             }
@@ -139,7 +173,9 @@
       }
     ],
     "uninstall": [
-      { "stepId": "main" },
+      {
+        "stepId": "main"
+      },
       {
         "stepId": "aks-firewall-rules-uninstall",
         "stepTitle": "Remove network firewall rules for AKS",
@@ -152,14 +188,18 @@
             "type": "array",
             "arraySubstitutionAction": "remove",
             "arrayMatchField": "name",
-            "value": { "name": "nrc_svc_{{ resource.id }}_aks" }
+            "value": {
+              "name": "nrc_svc_{{ resource.id }}_aks"
+            }
           },
           {
             "name": "rule_collections",
             "type": "array",
             "arraySubstitutionAction": "remove",
             "arrayMatchField": "name",
-            "value": { "name": "arc_svc_{{ resource.id }}_aks" }
+            "value": {
+              "name": "arc_svc_{{ resource.id }}_aks"
+            }
           }
         ]
       }

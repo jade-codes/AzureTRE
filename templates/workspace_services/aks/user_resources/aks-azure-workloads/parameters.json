@@ -2,71 +2,103 @@
   "schemaType": "ParameterSet",
   "schemaVersion": "1.0.1",
   "namespace": "",
-  "name": "tre-service-aks-platform-workloads",
+  "name": "tre-service-aks-workloads",
   "parameters": [
     {
       "name": "workspace_id",
-      "source": { "env": "WORKSPACE_ID" }
+      "source": {
+        "env": "WORKSPACE_ID"
+      }
     },
     {
       "name": "node_count",
-      "source": { "env": "NODE_COUNT" }
+      "source": {
+        "env": "NODE_COUNT"
+      }
     },
     {
       "name": "node_size",
-      "source": { "env": "NODE_SIZE" }
+      "source": {
+        "env": "NODE_SIZE"
+      }
     },
     {
       "name": "node_autoscaling_enabled",
-      "source": { "env": "NODE_AUTOSCALING_ENABLED" }
+      "source": {
+        "env": "NODE_AUTOSCALING_ENABLED"
+      }
     },
     {
       "name": "node_autoscaling_min_count",
-      "source": { "env": "NODE_AUTOSCALING_MIN_COUNT" }
+      "source": {
+        "env": "NODE_AUTOSCALING_MIN_COUNT"
+      }
     },
     {
       "name": "node_autoscaling_max_count",
-      "source": { "env": "NODE_AUTOSCALING_MAX_COUNT" }
+      "source": {
+        "env": "NODE_AUTOSCALING_MAX_COUNT"
+      }
     },
     {
       "name": "workload_type",
-      "source": { "env": "WORKLOAD_TYPE" }
+      "source": {
+        "env": "WORKLOAD_TYPE"
+      }
     },
     {
-      "name": "workload_name",
-      "source": { "env": "WORKLOAD_NAME" }
+      "name": "workload_category",
+      "source": {
+        "env": "workload_category"
+      }
     },
     {
       "name": "workload_environment",
-      "source": { "env": "WORKLOAD_ENVIRONMENT" }
+      "source": {
+        "env": "WORKLOAD_ENVIRONMENT"
+      }
     },
     {
       "name": "workload_environment_type",
-      "source": { "env": "WORKLOAD_ENVIRONMENT_TYPE" }
+      "source": {
+        "env": "WORKLOAD_ENVIRONMENT_TYPE"
+      }
     },
     {
       "name": "initial_admin_password",
-      "source": { "env": "INITIAL_ADMIN_PASSWORD" }
+      "source": {
+        "env": "INITIAL_ADMIN_PASSWORD"
+      }
     },
     {
       "name": "parent_service_id",
-      "source": { "env": "PARENT_SERVICE_ID" }
+      "source": {
+        "env": "PARENT_SERVICE_ID"
+      }
     },
     {
       "name": "tre_id",
-      "source": { "env": "TRE_ID" }
+      "source": {
+        "env": "TRE_ID"
+      }
     },
     {
       "name": "mgmt_acr_name",
-      "source": { "env": "MGMT_ACR_NAME" }
+      "source": {
+        "env": "MGMT_ACR_NAME"
+      }
     },
     {
       "name": "mgmt_resource_group_name",
-      "source": { "env": "MGMT_RESOURCE_GROUP_NAME" }
+      "source": {
+        "env": "MGMT_RESOURCE_GROUP_NAME"
+      }
     },
     {
       "name": "id",
-      "source": { "env": "ID" }
+      "source": {
+        "env": "ID"
+      }
     },
     {
       "name": "tfstate_container_name",
@@ -88,7 +120,9 @@
     },
     {
       "name": "arm_use_msi",
-      "source": { "env": "ARM_USE_MSI" }
+      "source": {
+        "env": "ARM_USE_MSI"
+      }
     },
     {
       "name": "azure_environment",
@@ -98,11 +132,15 @@
     },
     {
       "name": "arm_environment",
-      "source": { "env": "ARM_ENVIRONMENT" }
+      "source": {
+        "env": "ARM_ENVIRONMENT"
+      }
     },
     {
       "name": "aad_authority_url",
-      "source": { "env": "AAD_AUTHORITY_URL" }
+      "source": {
+        "env": "AAD_AUTHORITY_URL"
+      }
     }
   ]
 }

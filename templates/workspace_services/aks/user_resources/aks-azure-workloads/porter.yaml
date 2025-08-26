@@ -1,8 +1,8 @@
 ---
 schemaVersion: 1.0.0
-name: tre-service-aks-platform-workloads
+name: tre-service-aks-workloads
 version: 1.0.0
-description: "Deploy platform workloads in AKS"
+description: "Deploy workloads in AKS"
 dockerfile: Dockerfile.tmpl
 registry: azuretre
 
@@ -23,7 +23,7 @@ parameters:
     type: integer
   - name: node_size
     type: string
-  - name: workload_name
+  - name: workload_category
     type: string
   - name: workload_type
     type: string
@@ -210,7 +210,7 @@ install:
 
               envsubst < "./manifests/${{ bundle.parameters.workload_type }}/values-template.yaml" > "./manifests/${{ bundle.parameters.workload_type }}/values.yaml"
   - helm3:
-      description: "Install AKS Azure platform resources"
+      description: "Install AKS Azure workloads resources"
       name: ${ bundle.outputs.aks_node_agent_pool_label }
       namespace: ${ bundle.parameters.workload_type }
       chart: "./manifests/${ bundle.parameters.workload_type }"
@@ -301,7 +301,7 @@ upgrade:
 
               envsubst < "./manifests/${{ bundle.parameters.workload_type }}/values-template.yaml" > "./manifests/${{ bundle.parameters.workload_type }}/values.yaml"
   - helm3:
-      description: "Upgrade AKS Azure platform resources"
+      description: "Upgrade AKS Azure workloads resources"
       name: ${ bundle.outputs.aks_node_agent_pool_label }
       namespace: ${ bundle.parameters.workload_type }
       chart: "./manifests/${ bundle.parameters.workload_type }"
@@ -352,7 +352,7 @@ uninstall:
         - "-l"
         - "azurecli"
   - helm3:
-      description: "Uninstall AKS Azure platform resources"
+      description: "Uninstall AKS Azure workloads resources"
       namespace: ${ bundle.parameters.workload_type }
       releases:
         - ${ bundle.outputs.aks_node_agent_pool_label }

@@ -1,6 +1,6 @@
-# AKS Platforms User Resource Service Bundle
+# Workloads User Resource Service Bundle
 
-This is a User Resource Service template that deploys containerised platform workloads to an Azure Kubernetes Service (AKS) cluster within a TRE workspace. It provides predefined workload configurations optimised for different research scenarios including DevSecOps, AI/ML, and Knowledge Graph workloads.
+This is a User Resource Service template that deploys containerised workloads to an Azure Kubernetes Service (AKS) cluster within a TRE workspace. It provides predefined workload configurations optimised for different research scenarios including DevSecOps, AI/ML, and Knowledge Graph workloads.
 
 ## Prerequisites
 
@@ -9,10 +9,10 @@ This is a User Resource Service template that deploys containerised platform wor
 
 ## Building the Bundle
 
-The AKS platform resources user resource container image needs building and pushing:
+The AKS workloads resources user resource container image needs building and pushing:
 
 ```bash
-make user_resource_bundle WORKSPACE_SERVICE=aks BUNDLE=aks-azure-platform-resources 
+make user_resource_bundle WORKSPACE_SERVICE=aks BUNDLE=aks-azure-workloads 
 ```
 
 ## Available Workload Types
@@ -23,7 +23,7 @@ make user_resource_bundle WORKSPACE_SERVICE=aks BUNDLE=aks-azure-platform-resour
 - **Autoscaling**: Enabled (1-5 nodes)
 - **Use Case**: Development, security, and operations workflows including CI/CD pipelines, code repositories, and security scanning tools
 
-### AI Model Workload  
+### AI Models Workload  
 - **Node Size**: Standard_NC6 (6 vCPU, 56 GB RAM, GPU-enabled)
 - **Default Node Count**: 3
 - **Autoscaling**: Enabled (1-5 nodes)
@@ -37,18 +37,18 @@ make user_resource_bundle WORKSPACE_SERVICE=aks BUNDLE=aks-azure-platform-resour
 
 ## Deployment Process
 
-The platform resources template:
+The workload resources template:
 1. Provisions additional node pools in the existing AKS cluster with workload-specific configurations
-2. Deploys Helm charts containing the required platform components
+2. Deploys Helm charts containing the required workload components
 3. Configures ingress and networking for service access
 4. Provides workload endpoints for accessing deployed applications
 
 ## Configuration
 
-When deploying AKS platform resources, the following parameters are configured:
+When deploying AKS workloads resources, the following parameters are configured:
 
 ### Required Parameters
-- `workload_name`: Select from DevSecOps, AI Model, or Knowledge Graph
+- `workload_category`: Select from DevSecOps, AI Models, or Knowledge Graph
 
 ### Auto-configured Parameters
 - Node sizing and scaling parameters are automatically set based on the selected workload type
@@ -65,14 +65,14 @@ When deploying AKS platform resources, the following parameters are configured:
 
 ## Service Access
 
-Once deployed, platform resources are accessible through:
+Once deployed, workload resources are accessible through:
 - Workload endpoints provided in the deployment outputs
 - Private DNS resolution within the TRE network
 - Kubernetes ingress controllers for web-based services
 
 ## Notes
 
-- The AKS cluster must be deployed and operational before installing platform resources
+- The AKS cluster must be deployed and operational before installing workload resources
 - Each workload type creates dedicated node pools with appropriate sizing
 - Autoscaling is enabled by default to handle varying workload demands
 - Workload endpoints are dynamically generated and captured as deployment outputs

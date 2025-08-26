@@ -31,7 +31,7 @@ CERTS_SHARED_SERVICE = "tre-shared-service-certs"
 ADMIN_VM_SHARED_SERVICE = "tre-shared-service-admin-vm"
 CYCLECLOUD_SHARED_SERVICE = "tre-shared-service-cyclecloud"
 
-AKS_PLATFORM_USER_RESOURCE = "tre-service-aks-platform-workloads"
+AKS_WORKLOADS_USER_RESOURCE = "tre-service-aks-workloads"
 GUACAMOLE_WINDOWS_USER_RESOURCE = "tre-service-guacamole-windowsvm"
 GUACAMOLE_LINUX_USER_RESOURCE = "tre-service-guacamole-linuxvm"
 

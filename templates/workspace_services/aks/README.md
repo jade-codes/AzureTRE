@@ -1,6 +1,6 @@
-# AKS Workspace Service for Azure TRE
+# AKS Workloads Service for Azure TRE
 
-This workspace service template provisions an Azure Kubernetes Service (AKS) cluster as part of a TRE workspace. The AKS cluster provides a container orchestration platform for running containerised workloads within the secure TRE environment.
+This workloads service template provisions an Azure Kubernetes Service (AKS) cluster as part of a TRE workspace. The AKS cluster provides a container orchestration platform for running containerised workloads within the secure TRE environment.
 
 ## Architecture
 
