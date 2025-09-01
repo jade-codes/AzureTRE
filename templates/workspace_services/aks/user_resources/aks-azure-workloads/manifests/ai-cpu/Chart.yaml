@@ -1,0 +1,4 @@
+apiVersion: v2
+name: workload-ai-cpu
+version: "1.0.0"
+description: Helm chart for AKS workspace service for AI CPU workloads

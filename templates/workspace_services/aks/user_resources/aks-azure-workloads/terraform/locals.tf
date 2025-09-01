@@ -3,7 +3,7 @@ locals {
   short_workspace_id = substr(var.workspace_id, -4, -1)
   short_parent_id    = substr(var.parent_service_id, -4, -1)
 
-  node_agent_pool_label = "${var.workload_type}${var.environment_type}${local.short_service_id}"
+  node_agent_pool_label = replace("${var.workload_type}${var.environment_type}${local.short_service_id}", "-", "")
   subdomain_suffix      = "${var.workload_type}-${var.environment_type}-${local.short_service_id}"
 
   workspace_resource_name_suffix      = "${var.tre_id}-ws-${local.short_workspace_id}"

@@ -238,6 +238,8 @@ resource "azurerm_firewall_policy_rule_collection_group" "core" {
         "production.cloudflare.docker.com",
         "sonatype.github.io",
         "dl.gitea.io",
+        "docker.gitea.com",
+        "gitea-pull-through-cache.4d3e0f26919f429c2b0092fb846c818a.r2.cloudflarestorage.com",
         "repo1.maven.org",
         "registry.npmjs.org",
         "pypi.org",
@@ -248,8 +250,13 @@ resource "azurerm_firewall_policy_rule_collection_group" "core" {
         "api.nuget.org",
         "raw.githubusercontent.com",
         "clm.sonatype.com",
-        "checkpoint-api.hashicorp.com"
-
+        "checkpoint-api.hashicorp.com",
+        # AI Enablement - Hugging Face
+        "public.ecr.aws",
+        "d2glxqk2uabbnd.cloudfront.net",
+        "huggingface.co",
+        "cas-server.xethub.hf.co",
+        "transfer.xethub.hf.co"
       ]
       source_addresses = ["*"]
     }

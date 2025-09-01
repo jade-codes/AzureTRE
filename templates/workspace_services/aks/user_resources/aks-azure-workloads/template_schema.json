@@ -35,7 +35,7 @@
       "description": "Select a workload category to create.",
       "enum": [
         "DevSecOps",
-        "AI Models",
+        "AI Models - CPU",
         "Knowledge Graph"
       ]
     },
@@ -48,14 +48,6 @@
         "Staging",
         "Production"
       ]
-    },
-    "initial_admin_password": {
-      "$id": "#/properties/initial_admin_password",
-      "type": "string",
-      "title": "Initial Admin Password",
-      "description": "Password for the initial admin user of the workload.",
-      "sensitive": true,
-      "updateable": true
     },
     "node_size": {
       "type": "string",
@@ -114,9 +106,6 @@
     },
     "workload_type": {
       "classNames": "tre-hidden"
-    },
-    "initial_admin_password": {
-      "ui:widget": "password"
     }
   },
   "allOf": [
@@ -257,7 +246,7 @@
       "if": {
         "properties": {
           "workload_category": {
-            "const": "AI Models"
+            "const": "AI Models - CPU"
           }
         },
         "required": [
@@ -267,7 +256,7 @@
       "then": {
         "properties": {
           "workload_type": {
-            "default": "ai"
+            "default": "ai-cpu"
           }
         }
       }
@@ -276,7 +265,7 @@
       "if": {
         "properties": {
           "workload_category": {
-            "const": "AI Models"
+            "const": "AI Models - CPU"
           },
           "workload_environment": {
             "const": "Development"
@@ -290,7 +279,7 @@
       "then": {
         "properties": {
           "node_size": {
-            "default": "Standard_NC4as_T4_v3"
+            "default": "Standard_E32_v5"
           },
           "node_count": {
             "default": 1
@@ -314,7 +303,7 @@
       "if": {
         "properties": {
           "workload_category": {
-            "const": "AI Models"
+            "const": "AI Models - CPU"
           },
           "workload_environment": {
             "const": "Staging"
@@ -328,10 +317,10 @@
       "then": {
         "properties": {
           "node_size": {
-            "default": "Standard_NC6"
+            "default": "Standard_E32_v5"
           },
           "node_count": {
-            "default": 2
+            "default": 1
           },
           "node_autoscaling_enabled": {
             "default": true
@@ -340,7 +329,7 @@
             "default": 1
           },
           "node_autoscaling_max_count": {
-            "default": 4
+            "default": 2
           },
           "workload_environment_type": {
             "default": "stage"
@@ -352,7 +341,7 @@
       "if": {
         "properties": {
           "workload_category": {
-            "const": "AI Models"
+            "const": "AI Models - CPU"
           },
           "workload_environment": {
             "const": "Production"
@@ -366,7 +355,7 @@
       "then": {
         "properties": {
           "node_size": {
-            "default": "Standard_NC12"
+            "default": "Standard_E32_v5"
           },
           "node_count": {
             "default": 3
@@ -375,10 +364,10 @@
             "default": true
           },
           "node_autoscaling_min_count": {
-            "default": 2
+            "default": 1
           },
           "node_autoscaling_max_count": {
-            "default": 15
+            "default": 10
           },
           "workload_environment_type": {
             "default": "prod"

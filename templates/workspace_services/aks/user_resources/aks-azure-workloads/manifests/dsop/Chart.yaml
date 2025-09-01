@@ -1,6 +1,6 @@
 apiVersion: v2
 name: workload-dsop
-version: "1.0.5"
+version: "1.0.6"
 description: Helm chart for AKS workspace service with DevSecOps tools (Gitea, Jenkins, Nexus)
 appVersion: "1.0.0"
 
@@ -14,6 +14,6 @@ dependencies:
     repository: "https://sonatype.github.io/helm3-charts"
     condition: nexus-repository-manager.enabled
   - name: gitea
-    version: "9.6.1"
+    version: "12.2.0"
     repository: "https://dl.gitea.io/charts"
     condition: gitea.enabled

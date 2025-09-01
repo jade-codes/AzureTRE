@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Workloads Service",
-  "description": "Parameters for deploying the workloads service .",
+  "description": "Parameters for deploying the workloads service.",
   "type": "object",
   "properties": {
     "display_name": {

@@ -88,6 +88,14 @@ gitea:
   nodeSelector:
     agentpool: ${AKS_AGENT_POOL}
 
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
   persistence:
     enabled: true
     claimName: ${AKS_AGENT_POOL}-gitea-data

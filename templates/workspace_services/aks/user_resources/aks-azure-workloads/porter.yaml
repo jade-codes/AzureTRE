@@ -57,9 +57,10 @@ parameters:
     description: "Used by Azure CLI to set the Azure environment"
   - name: initial_admin_password
     type: string
-    description: "Initial admin password for applicable instances"
-    sensitive: true
     env: INITIAL_ADMIN_PASSWORD
+  - name: hf_token
+    type: string
+    env: HF_TOKEN
 
   # the following are added automatically by the resource processor
   - name: id
@@ -207,6 +208,7 @@ install:
               export AKS_SUBDOMAIN_SUFFIX=$(cat /cnab/app/outputs/aks_subdomain_suffix)
               export AKS_DNS_ZONE=$(cat /cnab/app/outputs/aks_private_dns_zone)
               export AKS_INITIAL_ADMIN_PASSWORD=${{ bundle.parameters.initial_admin_password }}
+              export AKS_HF_TOKEN=${{ bundle.parameters.hf_token }}
 
               envsubst < "./manifests/${{ bundle.parameters.workload_type }}/values-template.yaml" > "./manifests/${{ bundle.parameters.workload_type }}/values.yaml"
   - helm3:
@@ -214,6 +216,7 @@ install:
       name: ${ bundle.outputs.aks_node_agent_pool_label }
       namespace: ${ bundle.parameters.workload_type }
       chart: "./manifests/${ bundle.parameters.workload_type }"
+      timeout: 20m
       resetValues: true
       reuseValues: false
       wait: true
@@ -298,6 +301,7 @@ upgrade:
               export AKS_SUBDOMAIN_SUFFIX=$(cat /cnab/app/outputs/aks_subdomain_suffix)
               export AKS_DNS_ZONE=$(cat /cnab/app/outputs/aks_private_dns_zone)
               export AKS_INITIAL_ADMIN_PASSWORD=${{ bundle.parameters.initial_admin_password }}
+              export AKS_HF_TOKEN=${{ bundle.parameters.hf_token }}
 
               envsubst < "./manifests/${{ bundle.parameters.workload_type }}/values-template.yaml" > "./manifests/${{ bundle.parameters.workload_type }}/values.yaml"
   - helm3:
@@ -305,6 +309,7 @@ upgrade:
       name: ${ bundle.outputs.aks_node_agent_pool_label }
       namespace: ${ bundle.parameters.workload_type }
       chart: "./manifests/${ bundle.parameters.workload_type }"
+      timeout: 20m
       resetValues: true
       reuseValues: false
       wait: true
@@ -354,6 +359,7 @@ uninstall:
   - helm3:
       description: "Uninstall AKS Azure workloads resources"
       namespace: ${ bundle.parameters.workload_type }
+      timeout: 20m
       releases:
         - ${ bundle.outputs.aks_node_agent_pool_label }
       wait: true

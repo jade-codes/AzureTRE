@@ -65,12 +65,6 @@
       }
     },
     {
-      "name": "initial_admin_password",
-      "source": {
-        "env": "INITIAL_ADMIN_PASSWORD"
-      }
-    },
-    {
       "name": "parent_service_id",
       "source": {
         "env": "PARENT_SERVICE_ID"
@@ -104,6 +98,18 @@
       "name": "tfstate_container_name",
       "source": {
         "env": "TERRAFORM_STATE_CONTAINER_NAME"
+      }
+    },
+    {
+      "name": "initial_admin_password",
+      "source": {
+        "env": "INITIAL_ADMIN_PASSWORD"
+      }
+    },
+    {
+      "name": "hf_token",
+      "source": {
+        "env": "HF_TOKEN"
       }
     },
     {

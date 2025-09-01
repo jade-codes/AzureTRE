@@ -1,7 +1,7 @@
 ---
 schemaVersion: 1.0.0
 name: tre-debug
-version: 1.0.0
+version: 1.0.10
 description: "Debug template processing"
 dockerfile: Dockerfile.tmpl
 registry: localhost:5001
@@ -15,7 +15,14 @@ parameters:
     default: "dev"
   - name: initial_admin_password
     type: string
-    default: "admin123"
+    env: INITIAL_ADMIN_PASSWORD
+    sensitive: true
+    default: admin123
+  - name: hf_token
+    type: string
+    env: HF_TOKEN
+    sensitive: true
+    default: hf_token_value
 
 mixins:
   - exec
@@ -45,6 +52,7 @@ install:
             export AKS_SUBDOMAIN_SUFFIX=$(cat /cnab/app/outputs/aks_node_agent_pool_label)
             export AKS_DNS_ZONE=$(cat /cnab/app/outputs/aks_private_dns_zone)
             export AKS_INITIAL_ADMIN_PASSWORD=${{ bundle.parameters.initial_admin_password }}
+            export AKS_HF_TOKEN=${{ bundle.parameters.hf_token }}
 
             # Create values.yaml from template
             envsubst < "./manifests/${{ bundle.parameters.workload_type }}/values-template.yaml" > "./manifests/${{ bundle.parameters.workload_type }}/values.yaml"
