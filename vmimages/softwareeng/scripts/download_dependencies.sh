@@ -163,6 +163,8 @@ download_dependencies() {
         ["https://github.com/git-for-windows/git/releases/download/v2.50.1.windows.1/Git-2.50.1-64-bit.exe"]="git_installer.exe:git_installer.exe"
         ["https://github.com/containers/podman/releases/download/v5.5.2/podman-5.5.2-setup.exe"]="podman_installer.exe:podman_installer.exe"
         ["https://github.com/containers/podman-machine-wsl-os/releases/download/v20250206061445/5.3-rootfs-amd64.tar.zst"]="5.3-rootfs-amd64.tar.zst:5.3-rootfs-amd64.tar.zst"
+        ["https://github.com/microsoft/WSL/releases/download/2.5.10/wsl.2.5.10.0.x64.msi"]="wsl.2.5.10.0.x64.msi:wsl.2.5.10.0.x64.msi"
+        ["https://www.python.org/ftp/python/3.13.7/python-3.13.7-amd64.exe"]="python-3.13.7-amd64.exe:python-3.13.7-amd64.exe"
     )
 
     local failed_downloads=()

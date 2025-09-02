@@ -12,6 +12,8 @@ Once deployed the required version of the image can then be built.  Before runni
 | Git for Windows | [https://github.com/git-for-windows/git/releases/download/v2.50.1.windows.1/Git-2.50.1-64-bit.exe](https://github.com/git-for-windows/git/releases/download/v2.50.1.windows.1/Git-2.50.1-64-bit.exe) | `softwareeng/git_installer.exe`|
 | Podman | [https://github.com/containers/podman/releases/download/v5.2.2/podman-5.2.2-setup.exe](https://github.com/containers/podman/releases/download/v5.2.2/podman-5.2.2-setup.exe) | `softwareeng/podman_installer.exe`|
 | Podman WSL Image | [https://github.com/containers/podman-machine-wsl-os/releases/download/v20250206061445/5.3-rootfs-amd64.tar.zst](https://github.com/containers/podman-machine-wsl-os/releases/download/v20250206061445/5.3-rootfs-amd64.tar.zst) | `softwareeng/5.3-rootfs-amd64.tar.zst`|
+| WSL v2 Kernel | [https://github.com/microsoft/WSL/releases/download/2.5.10/wsl.2.5.10.0.x64.msi](https://github.com/microsoft/WSL/releases/download/2.5.10/wsl.2.5.10.0.x64.msi) | `softwareeng/wsl.2.5.10.0.x64.msi`|
+| Python  | [https://www.python.org/ftp/python/3.13.7/python-3.13.7-amd64.exe](https://www.python.org/ftp/python/3.13.7/python-3.13.7-amd64.exe) | `softwareeng/python-3.13.7-amd64.exe`|
 
 
 The files can be downloaded using the following make command `make vm-softwareeng-fetch-dependencies`.  

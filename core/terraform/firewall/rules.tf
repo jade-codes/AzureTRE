@@ -280,6 +280,50 @@ resource "azurerm_firewall_policy_rule_collection_group" "core" {
       ]
       source_addresses = ["*"]
     }
+
+
+  }
+
+  application_rule_collection {
+    name     = "arc-vm-image-build-subnet"
+    priority = 310
+    action   = "Allow"
+
+    # Required FQDNs for building images.
+    rule {
+      name = "vm-image-build-required-fqdns"
+      protocols {
+        port = "443"
+        type = "Https"
+      }
+      destination_fqdns = [
+        "msedge.api.cdp.microsoft.com",
+        "config.edge.skype.com",
+        "www.msftconnecttest.com",
+        "ecs.office.com",
+        "www.msftncsi.com",
+        "mobile.events.data.microsoft.com",
+        "ctldl.windowsupdate.com",
+        "wdcp.microsoft.com",
+        "wdcpalt.microsoft.com",
+
+        "login.live.com",
+        "settings-win.data.microsoft.com",
+        "fs.microsoft.com",
+        "slscr.update.microsoft.com",
+        "*.blob.core.windows.net",
+        "agentserviceapi.guestconfiguration.azure.com",
+        "marketplace.visualstudio.com",
+        "licensing.mp.microsoft.com",
+        "geo.prod.do.dsp.mp.microsoft.com",
+        "watson.events.data.microsoft.com",
+        "uksouth-gas.guestconfiguration.azure.com",
+        "www.vscode-unpkg.net",
+        "api.github.com",
+        "*.vsassets.io"
+      ]
+      source_addresses = [var.vm_image_build_subnet_address_range]
+    }
   }
 
   depends_on = [

@@ -117,3 +117,7 @@ output "web_app_ip_group_id" {
   value = azurerm_ip_group.webapp.id
 }
 
+output "vm_image_build_subnet_address_range" {
+  value = local.vm_image_build_subnet_address_prefix
+}
+

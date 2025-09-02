@@ -64,3 +64,8 @@ variable "shared_services_ip_group_id" {
   type        = string
   description = "Shared Services IP Group"
 }
+
+variable "vm_image_build_subnet_address_range" {
+  type        = string
+  description = "Address range for the VM Image Build subnet"
+}
