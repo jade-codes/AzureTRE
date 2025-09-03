@@ -1,0 +1,32 @@
+trigger: none
+
+pr:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+
+- stage: ValidatePrWorkItems
+  displayName: 'Validate Linked Work Items'
+  jobs:
+
+  - job: CheckLinkedWorkItemsAndParents
+    displayName: 'Check Linked Work Items and Parent'
+    steps:
+
+    - task: PowerShell@2
+      displayName: 'Validate Linked Work Items'
+      env:
+        ACCESS_TOKEN: $(System.AccessToken)
+      inputs:
+        filePath:  './.azdo/Validate-LinkedWorkItems.ps1'
+        arguments: >-
+          -RequiredWorkItemType "Tool Requirement"
+          -RequiredParentType "Tool Operational Requirement"
+          -OrganizationUrl "$(System.CollectionUri)"
+          -ProjectName "$(System.TeamProject)"
+          -PullRequestId "$(System.PullRequest.PullRequestId)"
+          -RepositoryName "$(Build.Repository.Name)"
+        pwsh: true
