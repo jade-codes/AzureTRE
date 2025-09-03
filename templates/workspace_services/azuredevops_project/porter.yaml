@@ -1,7 +1,7 @@
 ---
 schemaVersion: 1.0.0
 name: tre-workspace-service-azdo-project
-version: 1.0.18
+version: 1.0.19
 description: "An Azure DevOps Projects workspace service"
 registry: azuretre
 dockerfile: Dockerfile.tmpl

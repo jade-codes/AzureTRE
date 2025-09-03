@@ -4,7 +4,10 @@
   "type": "object",
   "title": "Azure DevOps Project Workspace Service",
   "description": "Create a project in Azure DevOps",
-  "required": [],
+  "required": [
+    "azure_devops_project",
+    "azure_devops_organisation"
+  ],
   "properties": {
     "display_name": {
       "type": "string",
