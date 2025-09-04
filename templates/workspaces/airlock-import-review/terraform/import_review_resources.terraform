@@ -2,7 +2,6 @@
 # The Dockerfile includes a RUN command to change the extension from .terraform to .tf after the files from the base workspace are copied to this directory.
 
 locals {
-  core_resource_group_name = "rg-${var.tre_id}"
   # STorage AirLock IMport InProgress
   import_in_progress_storage_name = lower(replace("stalimip${var.tre_id}", "-", ""))
 }
@@ -41,7 +40,7 @@ resource "azurerm_private_dns_zone" "stg_import_inprogress_blob" {
 
   tags = local.tre_workspace_tags
 
-  depends_on = [ azurerm_private_endpoint.sa_import_inprogress_pe ]
+  depends_on = [azurerm_private_endpoint.sa_import_inprogress_pe]
 }
 
 resource "azurerm_private_dns_a_record" "stg_import_inprogress_blob" {
@@ -63,5 +62,5 @@ resource "azurerm_private_dns_zone_virtual_network_link" "stg_import_inprogress_
 
   tags = local.tre_workspace_tags
 
-  depends_on = [ azurerm_private_dns_a_record.stg_import_inprogress_blob ]
+  depends_on = [azurerm_private_dns_a_record.stg_import_inprogress_blob]
 }

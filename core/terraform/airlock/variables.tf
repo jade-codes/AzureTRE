@@ -107,3 +107,8 @@ variable "encryption_key_versionless_id" {
   type        = string
   description = "Versionless ID of the encryption key in the key vault"
 }
+
+variable "app_gateway_fqdn" {
+  type        = string
+  description = "The FQDN of the App Gateway"
+}

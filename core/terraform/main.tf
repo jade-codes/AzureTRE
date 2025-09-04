@@ -162,12 +162,12 @@ module "airlock_resources" {
   queue_core_dns_zone_id                = module.network.queue_core_dns_zone_id
   table_core_dns_zone_id                = module.network.table_core_dns_zone_id
   eventgrid_private_dns_zone_id         = module.network.eventgrid_private_dns_zone_id
-
-  enable_local_debugging        = var.enable_local_debugging
-  myip                          = local.myip
-  enable_cmk_encryption         = var.enable_cmk_encryption
-  encryption_key_versionless_id = var.enable_cmk_encryption ? azurerm_key_vault_key.tre_encryption[0].versionless_id : null
-  encryption_identity_id        = var.enable_cmk_encryption ? azurerm_user_assigned_identity.encryption[0].id : null
+  enable_local_debugging                = var.enable_local_debugging
+  myip                                  = local.myip
+  enable_cmk_encryption                 = var.enable_cmk_encryption
+  encryption_key_versionless_id         = var.enable_cmk_encryption ? azurerm_key_vault_key.tre_encryption[0].versionless_id : null
+  encryption_identity_id                = var.enable_cmk_encryption ? azurerm_user_assigned_identity.encryption[0].id : null
+  app_gateway_fqdn                      = "https://${var.tre_id}.${var.location}.cloudapp.azure.com"
 
   depends_on = [
     azurerm_servicebus_namespace.sb,

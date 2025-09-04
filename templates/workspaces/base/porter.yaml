@@ -1,7 +1,7 @@
 ---
 schemaVersion: 1.0.0
 name: tre-workspace-base
-version: 2.5.2
+version: 2.5.8
 description: "A base Azure TRE workspace"
 dockerfile: Dockerfile.tmpl
 registry: azuretre
@@ -220,6 +220,16 @@ outputs:
     applyTo:
       - install
       - upgrade
+  - name: services_addresses
+    type: string
+    applyTo:
+      - install
+      - upgrade
+  - name: ui_fqdn
+    type: string
+    applyTo:
+      - install
+      - upgrade
 
 mixins:
   - exec
@@ -286,6 +296,8 @@ install:
         - name: workspace_owners_group_id
         - name: workspace_researchers_group_id
         - name: workspace_airlock_managers_group_id
+        - name: services_addresses
+        - name: ui_fqdn
 
 upgrade:
   - terraform:
@@ -345,6 +357,8 @@ upgrade:
         - name: workspace_owners_group_id
         - name: workspace_researchers_group_id
         - name: workspace_airlock_managers_group_id
+        - name: services_addresses
+        - name: ui_fqdn
   - az:
       description: "Set Azure Cloud Environment"
       arguments:

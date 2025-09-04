@@ -42,3 +42,7 @@ output "azure_monitor_agentsvc_dns_zone_id" {
   value = azurerm_private_dns_zone.azure_monitor_agentsvc.id
 }
 
+output "services_addresses" {
+  value = azurerm_subnet.services.address_prefixes
+}
+

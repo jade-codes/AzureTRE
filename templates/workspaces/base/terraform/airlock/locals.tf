@@ -34,4 +34,24 @@ locals {
     azurerm_storage_account.sa_export_internal.id,
     azurerm_storage_account.sa_export_inprogress.id
   ]
+
+    airlock_api_read_write_cors_rules = [
+    {
+      allowedOrigins = [var.app_gateway_fqdn]
+      allowedMethods = ["GET, PUT, DELETE"]
+      allowedHeaders = ["*"]
+      exposedHeaders = []
+      maxAgeInSeconds = 3600
+    }
+  ]
+
+  airlock_api_read_only_cors_rules = [
+    {
+      allowedOrigins = [var.app_gateway_fqdn]
+      allowedMethods = ["GET"]
+      allowedHeaders = ["*"]
+      exposedHeaders = []
+      maxAgeInSeconds = 3600
+    }
+  ]
 }

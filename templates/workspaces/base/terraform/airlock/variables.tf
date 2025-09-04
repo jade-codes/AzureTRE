@@ -40,3 +40,7 @@ variable "enable_airlock_malware_scanning" {
 variable "airlock_malware_scan_result_topic_name" {
   type = string
 }
+variable "app_gateway_fqdn" {
+  type        = string
+  description = "The FQDN of the App Gateway"
+}

@@ -159,7 +159,115 @@
   ],
   "actions": [],
   "customActions": [],
-  "pipeline": null,
+  "pipeline": {
+    "install": [
+      {
+        "stepId": "main"
+      },
+      {
+        "stepId": "f31cbff7-407e-4433-90b4-7bfc94d25a10",
+        "stepTitle": "Add firewall rules for TRE UI",
+        "resourceTemplateName": "tre-shared-service-firewall",
+        "resourceType": "shared-service",
+        "resourceAction": "upgrade",
+        "properties": [
+          {
+            "name": "rule_collections",
+            "type": "array",
+            "arraySubstitutionAction": "replace",
+            "arrayMatchField": "name",
+            "value": {
+              "name": "arc_svc_{{ resource.id }}_air_ws",
+              "action": "Allow",
+              "rules": [
+                {
+                  "name": "tre-ui",
+                  "description": "Allow Access to the TRE UI",
+                  "source_addresses": "{{ resource.properties.services_addresses }}",
+                  "target_fqdns": [
+                    "{{ resource.properties.ui_fqdn }}",
+                    "*.cdn.office.net",
+                    "login.microsoftonline.com"
+                  ],
+                  "protocols": [
+                    {
+                      "port": "443",
+                      "type": "Https"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "upgrade": [
+      {
+        "stepId": "main"
+      },
+      {
+        "stepId": "88cbfed9-99a0-43e8-91dc-c082602b06db",
+        "stepTitle": "Add firewall rules for TRE UI",
+        "resourceTemplateName": "tre-shared-service-firewall",
+        "resourceType": "shared-service",
+        "resourceAction": "upgrade",
+        "properties": [
+          {
+            "name": "rule_collections",
+            "type": "array",
+            "arraySubstitutionAction": "replace",
+            "arrayMatchField": "name",
+            "value": {
+              "name": "arc_svc_{{ resource.id }}_air_ws",
+              "action": "Allow",
+              "rules": [
+                {
+                  "name": "tre-ui",
+                  "description": "Allow Access to the TRE UI",
+                  "source_addresses": "{{ resource.properties.services_addresses }}",
+                  "target_fqdns": [
+                    "{{ resource.properties.ui_fqdn }}",
+                    "*.cdn.office.net",
+                    "login.microsoftonline.com"
+                  ],
+                  "protocols": [
+                    {
+                      "port": "443",
+                      "type": "Https"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "uninstall": [
+      {
+        "stepId": "ad242234-9226-4e1c-a909-c7a14613c9d8",
+        "stepTitle": "Remove firewall rules for TRE UI",
+        "resourceTemplateName": "tre-shared-service-firewall",
+        "resourceType": "shared-service",
+        "resourceAction": "upgrade",
+        "properties": [
+          {
+            "name": "rule_collections",
+            "type": "array",
+            "arraySubstitutionAction": "remove",
+            "arrayMatchField": "name",
+            "value": {
+              "name": "arc_svc_{{ resource.id }}_air_ws"
+            }
+          }
+        ]
+      },
+      {
+        "stepId": "main"
+      }
+    ]
+  },
   "uiSchema": {
     "aad_redirect_uris": {
       "classNames": "tre-hidden"

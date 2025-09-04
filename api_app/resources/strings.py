@@ -48,6 +48,7 @@ API_CANCEL_AIRLOCK_REQUEST = "Cancel an airlock request"
 API_REVIEW_AIRLOCK_REQUEST = "Review an airlock request"
 API_REVOKE_AIRLOCK_REQUEST = "Revoke an airlock request"
 API_AIRLOCK_REQUEST_LINK = "Get a token to access airlock request"
+API_AIRLOCK_REQUEST_ACCOUNT = "Get the storage account for the airlock request"
 API_CREATE_AIRLOCK_REVIEW_USER_RESOURCE = "Create an Airlock Review User Resource"
 
 API_CREATE_WORKSPACE_TEMPLATES = "Register workspace template"

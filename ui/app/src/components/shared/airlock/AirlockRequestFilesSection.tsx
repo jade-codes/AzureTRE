@@ -7,6 +7,8 @@ import {
   Stack,
   TextField,
   TooltipHost,
+  DefaultButton,
+  Spinner,
 } from "@fluentui/react";
 import React, { useCallback, useEffect, useState } from "react";
 import { HttpMethod, useAuthApiCall } from "../../../hooks/useAuthApiCall";
@@ -15,6 +17,9 @@ import { ApiEndpoint } from "../../../models/apiEndpoints";
 import { APIError } from "../../../models/exceptions";
 import { ExceptionLayout } from "../ExceptionLayout";
 import { CliCommand } from "../CliCommand";
+import { useSasStorageCall } from "../../../hooks/useSasStorageCall";
+import { AirlockFileUpload } from "./AirlockFileUpload";
+import { parseSasUrl } from "../../../hooks/parseSasUrl";
 
 interface AirlockRequestFilesSectionProps {
   request: AirlockRequest;
@@ -34,7 +39,17 @@ export const AirlockRequestFilesSection: React.FunctionComponent<
   const [sasUrlError, setSasUrlError] = useState(false);
   const [apiSasUrlError, setApiSasUrlError] = useState({} as APIError);
 
+  const [airlockFiles, setAirlockFiles] = useState<string[]>([]);
+  // Start with not loading until we actually have a SAS URL to query
+  const [airlockFilesLoading, setAirlockFilesLoading] = useState(false);
+
+  const [hasAirlockUploadError, setHasAirlockUploadError] = useState(false);
+  const [airlockUploadError, setAirlockUploadError] = useState({} as APIError);
+
+  const [airlockFileDownloading, setAirlockFileDownloading] = useState(false);
+
   const apiCall = useAuthApiCall();
+  const storageCall = useSasStorageCall();
 
   const generateSasUrl = useCallback(async () => {
     if (props.request && props.request.workspaceId) {
@@ -53,20 +68,6 @@ export const AirlockRequestFilesSection: React.FunctionComponent<
     }
   }, [apiCall, props.request, props.workspaceApplicationIdURI]);
 
-  const parseSasUrl = (sasUrl: string) => {
-    const match = sasUrl.match(
-      /https:\/\/(.*?).blob.core.windows.net\/(.*)\?(.*)$/,
-    );
-    if (!match) {
-      return;
-    }
-
-    return {
-      StorageAccountName: match[1],
-      containerName: match[2],
-      sasToken: match[3],
-    };
-  };
 
   const handleCopySasUrl = () => {
     if (!sasUrl) {
@@ -96,6 +97,88 @@ export const AirlockRequestFilesSection: React.FunctionComponent<
     return cliCommand;
   };
 
+  const handleUploadComplete = (success: boolean) => {
+    if (success) {
+      getAirlockFiles();
+    }
+  }
+
+  const getAirlockFiles = useCallback(async () => {
+    // Guard: need a SAS URL before attempting to list
+    if (!sasUrl) return;
+    if (props.request && props.request.workspaceId) {
+      try {
+        setAirlockFilesLoading(true);
+        const files = await storageCall(`${sasUrl}&comp=list&restype=container`, HttpMethod.Get);
+        const filesXml = (await files?.text()) ?? '';
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(filesXml, "text/xml");
+        const blobs = xmlDoc.getElementsByTagName("Blob");
+        const filesArray: string[] = [];
+        for (let i = 0; i < blobs.length; i++) {
+          filesArray.push(blobs[i].getElementsByTagName("Name")[0].textContent as string);
+        }
+        setAirlockFiles(filesArray);
+      } catch (err: any) {
+        err.userMessage = 'Error retrieving files';
+        setAirlockUploadError(err);
+        setHasAirlockUploadError(true);
+      }
+      setAirlockFilesLoading(false);
+    }
+  }, [storageCall, props.request, sasUrl]);
+
+  const handleDeleteFile = async (fileName: string) => {
+    if (!fileName || !sasUrl) return;
+    if (props.request && props.request.workspaceId) {
+      try {
+        setAirlockFilesLoading(true);
+        const sasDetails = parseSasUrl(sasUrl);
+        const deleteUrl = `https://${sasDetails?.StorageAccountName}.blob.core.windows.net/${sasDetails?.containerName}/${fileName}?${sasDetails?.sasToken}`;
+        await storageCall(deleteUrl, HttpMethod.Delete);
+        await getAirlockFiles();
+      } catch (err: any) {
+        err.userMessage = 'Error deleting file';
+        setAirlockUploadError(err);
+        setHasAirlockUploadError(true);
+      }
+      setAirlockFilesLoading(false);
+    }
+  };
+
+  const handleDownloadFile = async (fileName: string) => {
+    if (!fileName || !sasUrl) return;
+    if (props.request && props.request.workspaceId) {
+      try {
+        setAirlockFileDownloading(true);
+        const sasDetails = parseSasUrl(sasUrl);
+        const downloadUrl = `https://${sasDetails?.StorageAccountName}.blob.core.windows.net/${sasDetails?.containerName}/${fileName}?${sasDetails?.sasToken}`;
+        const response = await storageCall(downloadUrl, HttpMethod.Get);
+        if (!response || !response.ok) throw new Error("No response from storage call");
+        const file = await response.blob();
+        const url = window.URL.createObjectURL(file);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      } catch (err: any) {
+        err.userMessage = 'Error downloading file';
+      }
+      setAirlockFileDownloading(false);
+    }
+  };
+
+  // Load file list only after SAS URL is available
+  useEffect(() => {
+    if (sasUrl) {
+      getAirlockFiles();
+    }
+  }, [sasUrl, getAirlockFiles]);
+
   useEffect(() => {
     generateSasUrl();
   }, [generateSasUrl]);
@@ -103,6 +186,70 @@ export const AirlockRequestFilesSection: React.FunctionComponent<
   return (
     <Stack>
       <Pivot aria-label="Storage options">
+        <PivotItem headerText="Direct Access">
+          <Stack>
+            {
+              !airlockFilesLoading &&
+              <Stack.Item style={{ paddingTop: '10px', paddingBottom: '10px' }}>
+                {
+                  airlockFiles.length === 0 ?
+                    <small>There is currently no file attached to this request.</small> :
+                    <small>The following file is attached to this airlock request.</small>
+                }
+              </Stack.Item>
+            }
+            {
+              !airlockFilesLoading && airlockFiles.map(fileName =>
+                <Stack.Item style={{ paddingTop: '10px', paddingBottom: '10px' }}>
+                  <Stack horizontal styles={{ root: { alignItems: 'center', paddingTop: '7px' } }}>
+                    <Stack.Item grow>
+                      <TextField readOnly value={fileName} />
+                    </Stack.Item>
+                    {
+                      props.request.status === AirlockRequestStatus.Draft &&
+                      <DefaultButton
+                        iconProps={{ iconName: 'delete' }}
+                        styles={{ root: { minWidth: '40px', backgroundColor: 'rgb(232, 17, 35)', color: 'white' } }}
+                        onClick={() => { handleDeleteFile(fileName) }}
+                      />
+                    }
+                    {
+                      (props.request.status === AirlockRequestStatus.Approved) &&
+                      <PrimaryButton
+                        iconProps={{ iconName: 'download' }}
+                        styles={{ root: { minWidth: '40px' } }}
+                        onClick={() => { handleDownloadFile(fileName) }}
+                        disabled={airlockFileDownloading}
+                      >
+                        {airlockFileDownloading && <Spinner />}
+                      </PrimaryButton>
+                    }
+
+                  </Stack>
+                </Stack.Item>
+              )}
+          </Stack>
+          {!airlockFilesLoading && <Stack>
+            {
+              sasUrl && props.request.status === AirlockRequestStatus.Draft && airlockFiles.length === 0 &&
+              <AirlockFileUpload
+                title="Upload a file"
+                sasUrl={sasUrl}
+                containerName={props.request.id}
+                onUploadComplete={handleUploadComplete}
+              />
+            }
+
+          </Stack>
+          }
+          {
+            airlockFilesLoading && <Stack>
+              <Stack.Item style={{ paddingTop: '10px', paddingBottom: '10px' }}>
+                <Spinner />
+              </Stack.Item>
+            </Stack>
+          }
+        </PivotItem>
         <PivotItem headerText="SAS URL">
           <Stack>
             <Stack.Item style={{ paddingTop: "10px", paddingBottom: "10px" }}>

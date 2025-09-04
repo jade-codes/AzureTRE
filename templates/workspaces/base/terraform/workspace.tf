@@ -65,6 +65,7 @@ module "airlock" {
   encryption_identity_id                 = var.enable_cmk_encryption ? azurerm_user_assigned_identity.encryption_identity[0].id : null
   enable_airlock_malware_scanning        = var.enable_airlock_malware_scanning
   airlock_malware_scan_result_topic_name = var.enable_airlock_malware_scanning ? var.airlock_malware_scan_result_topic_name : null
+  app_gateway_fqdn                       = "https://${local.ui_fqdn}"
   depends_on = [
     module.network,
   ]
