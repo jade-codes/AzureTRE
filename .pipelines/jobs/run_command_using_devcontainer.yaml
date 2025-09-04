@@ -1,0 +1,87 @@
+parameters:
+  - name: SERVICE_CONNECTION_NAME
+    type: string
+  - name: DISPLAYNAME
+    type: string
+  - name: COMMAND
+    type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName: ${{parameters.DISPLAYNAME}}
+    retryCountOnTaskFailure: 3 # added reliability
+    inputs:
+      azureSubscription: ${{parameters.SERVICE_CONNECTION_NAME}}
+      scriptType: bash
+      scriptLocation: inlineScript
+      workingDirectory: $(System.DefaultWorkingDirectory)
+      addSpnToEnvironment: true # This flag is required to set the idToken environment variable.
+      useGlobalConfig: true
+      failOnStandardError: false
+      inlineScript: |
+
+        DEVCONTAINER_TAG=$(yq -e '.version' .devcontainer/version.yaml)
+
+        acr_domain_suffix=$(az cloud show --query suffixes.acrLoginServerEndpoint --output tsv)
+        CI_CACHE_ACR_URI="$(ACR_NAME)${acr_domain_suffix}"
+
+        if [ "$ACR_EXISTS" = "true" ] ; then
+          docker pull "$CI_CACHE_ACR_URI/tredevcontainer:$DEVCONTAINER_TAG"
+        fi
+
+        SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+
+        docker run --rm --mount \
+          "type=bind,src=$(System.DefaultWorkingDirectory),dst=/workspaces/tre" \
+          -v /var/run/docker.sock:/var/run/docker.sock \
+          -v /tmp:/home/vscode/host-tmp \
+          --workdir /workspaces/tre \
+          --user vscode \
+          -e TF_INPUT="0" \
+          -e TF_IN_AUTOMATION="1" \
+          -e USE_ENV_VARS_NOT_FILES="true" \
+          -e ARM_ENVIRONMENT="public" \
+          -e TF_VAR_arm_environment="public" \
+          -e AZURE_ENVIRONMENT="AzureCloud" \
+          -e LOCATION="$(LOCATION)" \
+          -e TF_VAR_location="$(LOCATION)" \
+          -e ARM_CLIENT_ID="$servicePrincipalId" \
+          -e AZURE_FEDERATED_TOKEN="$idToken" \
+          -e ARM_TENANT_ID="$tenantId" \
+          -e ARM_SUBSCRIPTION_ID="$SUBSCRIPTION_ID" \
+          -e ARM_USE_AZUREAD="true" \
+          -e TF_VAR_terraform_state_container_name="tfstate" \
+          -e TF_VAR_mgmt_storage_account_name="$(MGMT_STORAGE_ACCOUNT_NAME)" \
+          -e TF_VAR_mgmt_resource_group_name="$(MGMT_RESOURCE_GROUP_NAME)" \
+          -e ACR_NAME=$(ACR_NAME) \
+          -e TF_VAR_acr_name=$(ACR_NAME) \
+          -e TRE_URL="$(TRE_URL)" \
+          -e TF_VAR_aad_tenant_id="$tenantId" \
+          -e TF_VAR_api_client_id="$(API_CLIENT_ID)" \
+          -e TF_VAR_api_client_secret="$(API_CLIENT_SECRET)" \
+          -e TF_VAR_application_admin_client_id="$(APPLICATION_ADMIN_CLIENT_ID)" \
+          -e TF_VAR_application_admin_client_secret="$(APPLICATION_ADMIN_CLIENT_SECRET)" \
+          -e TF_VAR_arm_subscription_id="$SUBSCRIPTION_ID" \
+          -e TF_VAR_enable_swagger="$(ENABLE_SWAGGER)" \
+          -e SWAGGER_UI_CLIENT_ID="$(SWAGGER_UI_CLIENT_ID)" \
+          -e TF_VAR_swagger_ui_client_id="$(SWAGGER_UI_CLIENT_ID)" \
+          -e TF_VAR_core_address_space="$(CORE_ADDRESS_SPACE)" \
+          -e TF_VAR_tre_address_space="$(TRE_ADDRESS_SPACE)" \
+          -e TF_VAR_user_management_enabled="$(USER_MANAGEMENT_ENABLED)" \
+          -e API_CLIENT_ID="$(API_CLIENT_ID)" \
+          -e AAD_TENANT_ID="$(AAD_TENANT_ID)" \
+          -e TRE_ID="$(TRE_ID)" \
+          -e TF_VAR_tre_id="$(TRE_ID)" \
+          -e TEST_ACCOUNT_CLIENT_ID="$(TEST_ACCOUNT_CLIENT_ID)" \
+          -e TEST_ACCOUNT_CLIENT_SECRET="$(TEST_ACCOUNT_CLIENT_SECRET)" \
+          -e DOCKER_BUILDKIT="$DOCKER_BUILDKIT" \
+          -e CI_CACHE_ACR_NAME="$(ACR_NAME)" \
+          -e TF_VAR_core_app_service_plan_sku="$(WORKSPACE_APP_SERVICE_PLAN_SKU)" \
+          -e WORKSPACE_APP_SERVICE_PLAN_SKU="$(WORKSPACE_APP_SERVICE_PLAN_SKU)" \
+          -e TF_VAR_resource_processor_number_processes_per_instance="$(RESOURCE_PROCESSOR_NUMBER_PROCESSES_PER_INSTANCE)" \
+          -e DISABLE_ACR_PUBLIC_ACCESS="$(DISABLE_ACR_PUBLIC_ACCESS)" \
+          "$CI_CACHE_ACR_URI/tredevcontainer:$DEVCONTAINER_TAG" \
+        bash -c "${{parameters.COMMAND}}"
+    env:
+      ARM_USE_AZUREAD: true
+      DOCKER_BUILDKIT: 1

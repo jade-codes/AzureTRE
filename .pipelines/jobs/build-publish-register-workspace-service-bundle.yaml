@@ -1,0 +1,51 @@
+parameters:
+  - name: WORKSPACE_SERVICE_BUNDLE
+    displayName: "Choose Workspace Service Bundle"
+    type: string
+    values:
+      - guacamole
+      - azuredevops_firewall
+      - azuredevops_project
+      - aks
+  - name: LOCK_ENV
+    displayName: "Lock environment name (e.g. dev) - required"
+    type: string
+    values:
+      - dev
+      - prod
+
+jobs:
+  - deployment: BuildPublishRegisterWorkspaceServiceTemplate
+    displayName: Build Publish and Register '${{parameters.WORKSPACE_SERVICE_BUNDLE}}' Workspace Service Bundle
+    environment: ${{ parameters.LOCK_ENV }}
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - template: ../jobs/enable_mgmt_acr_access.yaml
+              parameters:
+                SERVICE_CONNECTION_NAME: $(SERVICE_CONNECTION_NAME)
+                ACR_NAME: $(ACR_NAME)
+
+            - template: ../jobs/build_devcontainer.yaml
+              parameters:
+                SERVICE_CONNECTION_NAME: "$(SERVICE_CONNECTION_NAME)"
+                ACR_NAME: $(ACR_NAME)
+
+            - template: ../jobs/run_command_using_devcontainer.yaml
+              parameters:
+                SERVICE_CONNECTION_NAME: $(SERVICE_CONNECTION_NAME)
+                DISPLAYNAME: "Build, Publish and Reigster '${{parameters.WORKSPACE_SERVICE_BUNDLE}}' Workspace Bundle"
+                COMMAND: make workspace_service_bundle BUNDLE=${{parameters.WORKSPACE_SERVICE_BUNDLE}}
+
+  - job: Cleanup
+    dependsOn: BuildPublishRegisterWorkspaceServiceTemplate
+    condition: always()
+    variables:
+      AGENT_IP: $[ dependencies.BuildPublishRegisterWorkspaceServiceTemplate.outputs['BuildPublishRegisterWorkspaceServiceTemplate.addAgentIp.AGENT_IP'] ]
+    steps:
+      - template: ../jobs/disable_mgmt_acr_access.yaml
+        parameters:
+          SERVICE_CONNECTION_NAME: $(SERVICE_CONNECTION_NAME)
+          ACR_NAME: $(ACR_NAME)
+          CLIENT_IP_ADRESS: $(AGENT_IP)

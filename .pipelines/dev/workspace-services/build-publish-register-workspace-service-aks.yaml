@@ -1,0 +1,21 @@
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - .pipelines/dev/workspace-services/build-publish-register-workspace-service-aks.yaml
+      - ./templates/workspace_services/aks/**
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  - group: tre-core-variables-dev
+  - group: tre-core-auth-secrets-dev
+  - group: azure-environment
+
+jobs:
+  - template: /.pipelines/jobs/build-publish-register-workspace-service-bundle.yaml
+    parameters:
+      WORKSPACE_SERVICE_BUNDLE: "aks"
+      LOCK_ENV: "dev"

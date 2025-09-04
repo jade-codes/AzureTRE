@@ -62,7 +62,13 @@ fi
 # with a Service Principal.
 if [ -n "${TF_IN_AUTOMATION:-}" ]; then
     az cloud set --name "$AZURE_ENVIRONMENT"
+
+  if [ -n "${AZURE_FEDERATED_TOKEN:-}" ]; then
+    az login --service-principal -u "$ARM_CLIENT_ID" --federated-token "$AZURE_FEDERATED_TOKEN" --tenant "$ARM_TENANT_ID"
+  else
     az login --service-principal -u "$ARM_CLIENT_ID" -p "$ARM_CLIENT_SECRET" --tenant "$ARM_TENANT_ID"
+  fi
+    
     az account set -s "$ARM_SUBSCRIPTION_ID"
 fi
 

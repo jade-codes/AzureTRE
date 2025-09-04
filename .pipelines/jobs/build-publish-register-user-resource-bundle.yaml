@@ -1,0 +1,59 @@
+parameters:
+  - name: WORKSPACE_SERVICE
+    displayName: "Choose Workspace Service For Bundle"
+    type: string
+    values:
+      - guacamole
+      - aks
+
+  - name: USER_RESOURCE_BUNDLE
+    displayName: "Choose User Resource Bundle"
+    type: string
+    values:
+      - guacamole-azure-windowsvm
+      - aks-azure-workloads
+      - guacamole-azure-import-reviewvm
+      - guacamole-azure-export-reviewvm
+
+  - name: LOCK_ENV
+    displayName: "Lock environment name (e.g. dev) - required"
+    type: string
+    values:
+      - dev
+      - prod
+
+jobs:
+  - deployment: BuildPublishRegisterUserResourceTemplate
+    displayName: Build Publish and Register '${{parameters.USER_RESOURCE_BUNDLE}}' User Resource Bundle
+    environment: ${{ parameters.LOCK_ENV }}
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - template: ../jobs/enable_mgmt_acr_access.yaml
+              parameters:
+                SERVICE_CONNECTION_NAME: $(SERVICE_CONNECTION_NAME)
+                ACR_NAME: $(ACR_NAME)
+
+            - template: ../jobs/build_devcontainer.yaml
+              parameters:
+                SERVICE_CONNECTION_NAME: "$(SERVICE_CONNECTION_NAME)"
+                ACR_NAME: $(ACR_NAME)
+
+            - template: ../jobs/run_command_using_devcontainer.yaml
+              parameters:
+                SERVICE_CONNECTION_NAME: $(SERVICE_CONNECTION_NAME)
+                DISPLAYNAME: "Build, Publish and Reigster '${{parameters.USER_RESOURCE_BUNDLE}}' User Resource Bundle"
+                COMMAND: make user_resource_bundle WORKSPACE_SERVICE=${{parameters.WORKSPACE_SERVICE}} BUNDLE=${{parameters.USER_RESOURCE_BUNDLE}}
+
+  - job: Cleanup
+    dependsOn: BuildPublishRegisterUserResourceTemplate
+    condition: always()
+    variables:
+      AGENT_IP: $[ dependencies.BuildPublishRegisterUserResourceTemplate.outputs['BuildPublishRegisterUserResourceTemplate.addAgentIp.AGENT_IP'] ]
+    steps:
+      - template: ../jobs/disable_mgmt_acr_access.yaml
+        parameters:
+          SERVICE_CONNECTION_NAME: $(SERVICE_CONNECTION_NAME)
+          ACR_NAME: $(ACR_NAME)
+          CLIENT_IP_ADRESS: $(AGENT_IP)

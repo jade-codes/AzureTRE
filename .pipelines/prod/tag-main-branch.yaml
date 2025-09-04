@@ -1,0 +1,32 @@
+trigger: none
+
+pr: none
+
+parameters:
+  - name: USER_EMAIL
+    type: string
+    default: "ado@yourdomain.com"
+
+variables:
+  VERSION_PREFIX: "prod-v1.0."
+
+pool:
+  vmImage: "ubuntu-latest"
+
+steps:
+  - checkout: self
+    persistCredentials: true
+
+  - script: |
+      echo "Triggered by: $(Build.RequestedFor)"
+      echo "Branch: $(Build.SourceBranchName)"
+
+      versionTag="${VERSION_PREFIX}$(Build.BuildId)"
+      echo "Version Tag: $versionTag"
+
+      git config user.name "$(Build.RequestedFor)"
+      git config user.email "${{parameters.USER_EMAIL}}"
+
+      git tag -a "$versionTag" -m "Tag created by $(Build.RequestedFor) via ADO pipeline on branch $(Build.SourceBranchName)"
+      git push origin "$versionTag"
+    displayName: "Create and Push Git Tag"

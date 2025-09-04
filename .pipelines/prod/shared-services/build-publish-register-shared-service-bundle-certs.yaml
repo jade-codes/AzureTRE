@@ -1,0 +1,15 @@
+trigger: none
+
+variables:
+  - group: tre-core-variables-prod
+  - group: tre-core-auth-secrets-prod
+  - group: azure-environment
+
+pool:
+  vmImage: ubuntu-latest
+
+jobs:
+  - template: /.pipelines/jobs/build-publish-register-shared-service-bundle.yaml
+    parameters:
+      SHARED_SERVICE_BUNDLE: "certs"
+      LOCK_ENV: "prod"

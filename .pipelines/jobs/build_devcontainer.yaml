@@ -1,0 +1,98 @@
+parameters:
+  - name: SERVICE_CONNECTION_NAME
+    type: string
+  - name: ACR_NAME
+
+steps:
+  - checkout: self
+  - task: AzureCLI@2
+    displayName: ACR Login
+    retryCountOnTaskFailure: 3 # added reliability
+    inputs:
+      azureSubscription: ${{parameters.SERVICE_CONNECTION_NAME}}
+      scriptType: bash
+      scriptLocation: inlineScript
+      workingDirectory: $(System.DefaultWorkingDirectory)
+      addSpnToEnvironment: true # This flag is required to set the idToken environment variable.
+      useGlobalConfig: true
+      failOnStandardError: true
+      inlineScript: |
+        echo ${{ parameters.ACR_NAME }}
+        ACR_EXISTS=$(az acr list --out tsv --query "[?name=='${{ parameters.ACR_NAME }}'].name | [0] != null")
+        echo "##vso[task.setvariable variable=ACR_EXISTS]$ACR_EXISTS"
+        if [ "$ACR_EXISTS" = "true" ] ; then
+          echo "Logging in to ACR"
+          az acr login --name "${{ parameters.ACR_NAME }}"
+        fi
+    env:
+      ARM_USE_AZUREAD: true
+      DOCKER_BUILDKIT: 1
+
+  - task: AzureCLI@2
+    displayName: Build and Push TRE DevContainer Image
+    inputs:
+      azureSubscription: ${{ parameters.SERVICE_CONNECTION_NAME }}
+      scriptType: bash
+      scriptLocation: inlineScript
+      workingDirectory: $(System.DefaultWorkingDirectory)
+      addSpnToEnvironment: true # This flag is required to set the idToken environment variable.
+      useGlobalConfig: true
+      # failOnStandardError needs to be false to address an issue with docker and build agents, should be removed once fixed.
+      # https://www.koskila.net/azure-devops-pipelines-suddenly-failing-with-error0-building-with-default-instance-using-docker-driver/
+      failOnStandardError: false
+      inlineScript: |
+        set -e
+
+        # Use .devcontainer files from the agent sources directory
+        DEVCONTAINER_DIR="$BUILD_SOURCESDIRECTORY/.devcontainer"
+        DEVCONTAINER_TAG=$(yq -e '.version' "$DEVCONTAINER_DIR/version.yaml")
+
+        USER_UID=$(id -u)
+        USER_GID=$(id -g)
+
+        acr_domain_suffix=$(az cloud show --query suffixes.acrLoginServerEndpoint --output tsv)
+        ACR_URI=$(ACR_NAME)$acr_domain_suffix
+        image_url="$ACR_URI/tredevcontainer:$DEVCONTAINER_TAG"
+
+        echo "##vso[task.setvariable variable=CI_CACHE_ACR_URI]$ACR_URI"
+
+        docker_cache=()
+        if [ $ACR_EXISTS = true ]; then
+          echo "Loading existing devcontainer layers from acr"
+          docker_cache+=(--cache-from "$image_url")
+          docker_cache+=(--cache-from "$ACR_URI/tredevcontainer:latest")
+        fi
+
+        echo "Obtaining dev container tags"
+
+        if ! devcontainer_tags=$(az acr repository show-tags --name "${{ parameters.ACR_NAME }}" --repository tredevcontainer --output tsv 2>/dev/null); then
+          devcontainer_tags=""
+        fi
+
+        mapfile -t devcontainer_tags <<< "$devcontainer_tags"
+
+
+        if [[ "$DEVCONTAINER_TAG" == "latest" || \
+          ! " ${devcontainer_tags[*]} " =~ [[:space:]]${DEVCONTAINER_TAG}[[:space:]] ]]; then
+
+          docker build "$BUILD_SOURCESDIRECTORY" "${docker_cache[@]}" \
+            -t "tredevcontainer:$DEVCONTAINER_TAG" -f "$DEVCONTAINER_DIR/Dockerfile" \
+            --build-arg BUILDKIT_INLINE_CACHE=1 --build-arg USER_UID="${USER_UID}" \
+            --build-arg USER_GID="${USER_GID}"
+
+          echo "BUILD COMPLETE"
+
+          docker image tag tredevcontainer:$DEVCONTAINER_TAG "$image_url"
+
+          if [ $ACR_EXISTS = true ]; then
+            echo "Push updated image to acr: $image_url"
+
+            docker image push "$image_url"
+          fi
+        else
+          echo "Pull existing image from acr: $image_url"
+        fi
+
+    env:
+      ARM_USE_AZUREAD: true
+      DOCKER_BUILDKIT: 1

@@ -1,0 +1,18 @@
+parameters:
+  - name: SERVICE_CONNECTION_NAME
+    type: string
+  - name: ACR_NAME
+    type: string
+  - name: CLIENT_IP_ADRESS
+    type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName: "Cleanup Agent IP from ACR Firewall"
+    inputs:
+      azureSubscription: ${{ parameters.SERVICE_CONNECTION_NAME }}
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        az acr update --name ${{ parameters.ACR_NAME }} --public-network-enabled false
+        az acr network-rule remove --name ${{ parameters.ACR_NAME }} --ip-address ${{parameters.CLIENT_IP_ADRESS}}

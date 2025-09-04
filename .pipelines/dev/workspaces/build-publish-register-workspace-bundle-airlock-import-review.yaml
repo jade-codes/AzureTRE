@@ -1,0 +1,21 @@
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - .pipelines/dev/workspaces/build-publish-register-workspace-bundle-airlock-import-review.yaml
+      - ./templates/workspaces/airlock-import-review/**
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  - group: tre-core-variables-dev
+  - group: tre-core-auth-secrets-dev
+  - group: azure-environment
+
+jobs:
+  - template: /.pipelines/jobs/build-publish-register-workspace-bundle.yaml
+    parameters:
+      WORKSPACE_BUNDLE: "airlock-import-review"
+      LOCK_ENV: "dev"

@@ -1,0 +1,21 @@
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - .pipelines/dev/workspace-services/build-publish-register-workspace-service-azuredevops-firewall.yaml
+      - ./templates/workspace_services/azuredevops_firewall/**
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  - group: tre-core-variables-dev
+  - group: tre-core-auth-secrets-dev
+  - group: azure-environment
+
+jobs:
+  - template: /.pipelines/jobs/build-publish-register-workspace-service-bundle.yaml
+    parameters:
+      WORKSPACE_SERVICE_BUNDLE: "azuredevops_firewall"
+      LOCK_ENV: "dev"

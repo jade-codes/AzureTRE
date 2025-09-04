@@ -1,0 +1,21 @@
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - .pipelines/dev/shared-services/build-publish-register-shared-service-bundle-firewall.yaml
+      - ./templates/shared_services/firewall/**
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  - group: tre-core-variables-dev
+  - group: tre-core-auth-secrets-dev
+  - group: azure-environment
+
+jobs:
+  - template: /.pipelines/jobs/build-publish-register-shared-service-bundle.yaml
+    parameters:
+      SHARED_SERVICE_BUNDLE: "firewall"
+      LOCK_ENV: "dev"

@@ -1,0 +1,50 @@
+parameters:
+  - name: SHARED_SERVICE_BUNDLE
+    displayName: "Choose Shared Service Bundle"
+    type: string
+    values:
+      - sonatype-nexus-vm
+      - certs
+      - firewall
+  - name: LOCK_ENV
+    displayName: "Lock environment name (e.g. dev) - required"
+    type: string
+    values:
+      - dev
+      - prod
+
+jobs:
+  - deployment: BuildPublishRegisterSharedServiceTemplate
+    displayName: Build Publish and Register '${{parameters.SHARED_SERVICE_BUNDLE}}' Shared Service Bundle
+    environment: ${{ parameters.LOCK_ENV }}
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - template: ../jobs/enable_mgmt_acr_access.yaml
+              parameters:
+                SERVICE_CONNECTION_NAME: $(SERVICE_CONNECTION_NAME)
+                ACR_NAME: $(ACR_NAME)
+
+            - template: ../jobs/build_devcontainer.yaml
+              parameters:
+                SERVICE_CONNECTION_NAME: "$(SERVICE_CONNECTION_NAME)"
+                ACR_NAME: $(ACR_NAME)
+
+            - template: ../jobs/run_command_using_devcontainer.yaml
+              parameters:
+                SERVICE_CONNECTION_NAME: $(SERVICE_CONNECTION_NAME)
+                DISPLAYNAME: "Build, Publish and Reigster '${{parameters.SHARED_SERVICE_BUNDLE}}' Shared Service Bundle"
+                COMMAND: make shared_service_bundle BUNDLE=${{parameters.SHARED_SERVICE_BUNDLE}}
+
+  - job: Cleanup
+    dependsOn: BuildPublishRegisterSharedServiceTemplate
+    condition: always()
+    variables:
+      AGENT_IP: $[ dependencies.BuildPublishRegisterSharedServiceTemplate.outputs['BuildPublishRegisterSharedServiceTemplate.addAgentIp.AGENT_IP'] ]
+    steps:
+      - template: ../jobs/disable_mgmt_acr_access.yaml
+        parameters:
+          SERVICE_CONNECTION_NAME: $(SERVICE_CONNECTION_NAME)
+          ACR_NAME: $(ACR_NAME)
+          CLIENT_IP_ADRESS: $(AGENT_IP)

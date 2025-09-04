@@ -1,0 +1,15 @@
+trigger: none
+
+variables:
+  - group: tre-core-variables-prod
+  - group: tre-core-auth-secrets-prod
+  - group: azure-environment
+
+pool:
+  vmImage: ubuntu-latest
+
+jobs:
+  - template: /.pipelines/jobs/build-publish-register-workspace-bundle.yaml
+    parameters:
+      WORKSPACE_BUNDLE: "unrestricted"
+      LOCK_ENV: "prod"

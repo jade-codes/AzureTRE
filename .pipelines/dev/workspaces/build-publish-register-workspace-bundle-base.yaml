@@ -1,0 +1,21 @@
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - ./.pipelines/dev/workspaces/build-publish-register-workspace-bundle-base.yaml
+      - /templates/workspaces/base/**
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  - group: tre-core-variables-dev
+  - group: tre-core-auth-secrets-dev
+  - group: azure-environment
+
+jobs:
+  - template: /.pipelines/jobs/build-publish-register-workspace-bundle.yaml
+    parameters:
+      WORKSPACE_BUNDLE: "base"
+      LOCK_ENV: "dev"

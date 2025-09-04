@@ -1,0 +1,16 @@
+trigger: none
+
+variables:
+  - group: tre-core-variables-prod
+  - group: tre-core-auth-secrets-prod
+  - group: azure-environment
+
+pool:
+  vmImage: ubuntu-latest
+
+jobs:
+  - template: /.pipelines/jobs/build-publish-register-user-resource-bundle.yaml
+    parameters:
+      WORKSPACE_SERVICE: guacamole
+      USER_RESOURCE_BUNDLE: guacamole-azure-import-reviewvm
+      LOCK_ENV: "prod"
