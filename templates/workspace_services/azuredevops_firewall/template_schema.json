@@ -113,6 +113,47 @@
                       "type": "Https"
                     }
                   ]
+                },
+                {
+                  "name": "microsoft-azdo-rp",
+                  "description": "Allow AzDO FQDNs from resource processor",
+                  "source_ip_groups_in_core": ["ipg-resource-processor"],
+                  "target_fqdns": [
+                    "dev.azure.com",
+                    "*.dev.azure.com",
+                    "vsrm.dev.azure.com",
+                    "download.agent.dev.azure.com",
+                    "cdn.vsassets.io",
+                    "*.vsassets.io",
+                    "*.gallerycdn.vsassets.io",
+                    "login.microsoftonline.com",
+                    "management.azure.com",
+                    "management.core.windows.net",
+                    "static2.sharepointonline.com",
+                    "*.vssps.visualstudio.com",
+                    "*.vsblob.visualstudio.com",
+                    "*.vssps.visualstudio.com",
+                    "*.vstmr.visualstudio.com",
+                    "aexprodea1.vsaex.visualstudio.com",
+                    "*.vstmrblob.vsassets.io",
+                    "visualstudio.com",
+                    "aadcdn.msauth.net",
+                    "amcdn.msftauth.net",
+                    "azurecomcdn.azureedge.net",
+                    "login.live.com",
+                    "logincdn.msauth.net",
+                    "js.monitor.azure.com"
+                  ],
+                  "protocols": [
+                    {
+                      "port": "80",
+                      "type": "Http"
+                    },
+                    {
+                      "port": "443",
+                      "type": "Https"
+                    }
+                  ]
                 }
               ]
             }
@@ -168,6 +209,47 @@
                   "name": "microsoft-azdo",
                   "description": "Allow AzDO FQDNs",
                   "source_addresses": "{{ resource.properties.services_addresses }}",
+                  "target_fqdns": [
+                    "dev.azure.com",
+                    "*.dev.azure.com",
+                    "vsrm.dev.azure.com",
+                    "download.agent.dev.azure.com",
+                    "cdn.vsassets.io",
+                    "*.vsassets.io",
+                    "*.gallerycdn.vsassets.io",
+                    "login.microsoftonline.com",
+                    "management.azure.com",
+                    "management.core.windows.net",
+                    "static2.sharepointonline.com",
+                    "*.vssps.visualstudio.com",
+                    "*.vsblob.visualstudio.com",
+                    "*.vssps.visualstudio.com",
+                    "*.vstmr.visualstudio.com",
+                    "aexprodea1.vsaex.visualstudio.com",
+                    "*.vstmrblob.vsassets.io",
+                    "visualstudio.com",
+                    "aadcdn.msauth.net",
+                    "amcdn.msftauth.net",
+                    "azurecomcdn.azureedge.net",
+                    "login.live.com",
+                    "logincdn.msauth.net",
+                    "js.monitor.azure.com"
+                  ],
+                  "protocols": [
+                    {
+                      "port": "80",
+                      "type": "Http"
+                    },
+                    {
+                      "port": "443",
+                      "type": "Https"
+                    }
+                  ]
+                },
+                {
+                  "name": "microsoft-azdo-rp",
+                  "description": "Allow AzDO FQDNs from resource processor",
+                  "source_ip_groups_in_core": ["ipg-resource-processor"],
                   "target_fqdns": [
                     "dev.azure.com",
                     "*.dev.azure.com",

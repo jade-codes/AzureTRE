@@ -1,8 +1,8 @@
 ---
 schemaVersion: 1.0.0
 name: tre-workspace-service-azdo-firewall
-version: 1.0.2
-description: "An Azure DevOps Firewall service"
+version: 1.2.0
+description: "Workspace firewall configuration for the Azure DevOps workspace service"
 registry: azuretre
 dockerfile: Dockerfile.tmpl
 
