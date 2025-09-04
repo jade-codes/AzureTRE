@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema",
   "$id": "https://github.com/microsoft/AzureTRE/templates/workspace_services/sql/template_schema.json",
   "type": "object",
-  "title": "Azure DevOps Workspace Firewall Service",
+  "title": "Azure DevOps Firewall Service",
   "description": "Provides access to Azure DevOps within the workspace",
   "required": [],
   "properties": {

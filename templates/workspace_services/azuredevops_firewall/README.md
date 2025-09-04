@@ -1,4 +1,4 @@
-# Azure DevOps Firewall Workspace Service
+# Azure DevOps Firewall Service
 
 The following bundle adds the firewall rules required to access Azure DevOps from a workspace Virtual Machine.
 

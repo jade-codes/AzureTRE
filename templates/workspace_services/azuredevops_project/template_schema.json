@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema",
   "$id": "https://github.com/microsoft/AzureTRE/templates/workspace_services/sql/template_schema.json",
   "type": "object",
-  "title": "Azure DevOps Project Workspace Service",
+  "title": "Azure DevOps Project Service",
   "description": "Create a project in Azure DevOps",
   "required": [
     "azure_devops_project",

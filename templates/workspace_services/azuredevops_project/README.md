@@ -1,4 +1,4 @@
-# Azure DevOps Project Workspace Service
+# Azure DevOps Project Service
 
 The following bundle creates an Azure DevOps Project in the target organization.
 
