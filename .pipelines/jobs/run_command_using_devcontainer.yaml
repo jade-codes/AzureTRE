@@ -31,6 +31,9 @@ steps:
 
         SUBSCRIPTION_ID=$(az account show --query id -o tsv)
 
+        a=\"image_gallery_id\":\"$(COMPUTE_GALLERY_ID)\"
+        RP_BUNDLE_VALUES="{$a}"
+
         docker run --rm --mount \
           "type=bind,src=$(System.DefaultWorkingDirectory),dst=/workspaces/tre" \
           -v /var/run/docker.sock:/var/run/docker.sock \
@@ -80,6 +83,7 @@ steps:
           -e WORKSPACE_APP_SERVICE_PLAN_SKU="$(WORKSPACE_APP_SERVICE_PLAN_SKU)" \
           -e TF_VAR_resource_processor_number_processes_per_instance="$(RESOURCE_PROCESSOR_NUMBER_PROCESSES_PER_INSTANCE)" \
           -e DISABLE_ACR_PUBLIC_ACCESS="$(DISABLE_ACR_PUBLIC_ACCESS)" \
+          -e TF_VAR_rp_bundle_values=$RP_BUNDLE_VALUES \
           "$CI_CACHE_ACR_URI/tredevcontainer:$DEVCONTAINER_TAG" \
         bash -c "${{parameters.COMMAND}}"
     env:

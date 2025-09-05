@@ -1,0 +1,21 @@
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - .pipelines/dev/build-resource-processor-image.yaml
+      - ./resource_processor/**
+
+variables:
+  - group: tre-core-variables-dev
+  - group: tre-core-auth-secrets-dev
+  - group: azure-environment
+
+pool:
+  vmImage: ubuntu-latest
+
+jobs:
+  - template: /.pipelines/jobs/build-resource-processor-image.yaml
+    parameters:
+      LOCK_ENV: "dev"

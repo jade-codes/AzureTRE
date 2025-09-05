@@ -1,0 +1,21 @@
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - .pipelines/dev/build-and-deploy-ui.yaml
+      - ./api_app/**
+
+variables:
+  - group: tre-core-variables-dev
+  - group: tre-core-auth-secrets-dev
+  - group: azure-environment
+
+pool:
+  vmImage: ubuntu-latest
+
+jobs:
+  - template: /.pipelines/jobs/build-and-deploy-ui.yaml
+    parameters:
+      LOCK_ENV: "dev"

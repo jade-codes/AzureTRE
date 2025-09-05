@@ -1,0 +1,43 @@
+parameters:
+  - name: LOCK_ENV
+    displayName: "Lock environment name (e.g. dev) - required"
+    type: string
+    values:
+      - dev
+      - prod
+
+jobs:
+  - deployment: BuildApiImage
+    displayName: Build and Publish API Image
+    environment: ${{ parameters.LOCK_ENV }}
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - template: ../jobs/enable_mgmt_acr_access.yaml
+              parameters:
+                SERVICE_CONNECTION_NAME: $(SERVICE_CONNECTION_NAME)
+                ACR_NAME: $(ACR_NAME)
+
+            - template: ../jobs/build_devcontainer.yaml
+              parameters:
+                SERVICE_CONNECTION_NAME: "$(SERVICE_CONNECTION_NAME)"
+                ACR_NAME: $(ACR_NAME)
+
+            - template: ../jobs/run_command_using_devcontainer.yaml
+              parameters:
+                SERVICE_CONNECTION_NAME: $(SERVICE_CONNECTION_NAME)
+                DISPLAYNAME: Build and Publish API Image
+                COMMAND: make build-and-push-api
+
+  - job: Cleanup
+    dependsOn: BuildApiImage
+    condition: always()
+    variables:
+      AGENT_IP: $[ dependencies.BuildApiImage.outputs['BuildApiImage.addAgentIp.AGENT_IP'] ]
+    steps:
+      - template: ../jobs/disable_mgmt_acr_access.yaml
+        parameters:
+          SERVICE_CONNECTION_NAME: $(SERVICE_CONNECTION_NAME)
+          ACR_NAME: $(ACR_NAME)
+          CLIENT_IP_ADRESS: $(AGENT_IP)

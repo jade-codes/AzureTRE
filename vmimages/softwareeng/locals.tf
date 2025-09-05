@@ -6,4 +6,6 @@ locals {
     tre_core_service_id = var.tre_id
     tre_image_build     = "softwareeng"
   }
+
+  core_resource_group_name = "rg-${var.tre_id}"
 }

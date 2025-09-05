@@ -17,7 +17,7 @@ resource "azurerm_storage_account" "software" {
   cross_tenant_replication_enabled = false
   shared_access_key_enabled        = false
   local_user_enabled               = false
-  tags                             = var.tre_core_tags
+  tags                             = local.security_control_tags
 
   lifecycle {
     prevent_destroy = true

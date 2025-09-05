@@ -1,0 +1,43 @@
+parameters:
+  - name: LOCK_ENV
+    displayName: "Lock environment name (e.g. dev) - required"
+    type: string
+    values:
+      - dev
+      - prod
+
+jobs:
+  - deployment: PrepareSoftEngDeps
+    displayName: Prepare Software Engineering VM Dependencies
+    environment: ${{ parameters.LOCK_ENV }}
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - template: ../jobs/enable_mgmt_acr_access.yaml
+              parameters:
+                SERVICE_CONNECTION_NAME: $(SERVICE_CONNECTION_NAME)
+                ACR_NAME: $(ACR_NAME)
+
+            - template: ../jobs/build_devcontainer.yaml
+              parameters:
+                SERVICE_CONNECTION_NAME: "$(SERVICE_CONNECTION_NAME)"
+                ACR_NAME: $(ACR_NAME)
+
+            - template: ../jobs/run_command_using_devcontainer.yaml
+              parameters:
+                SERVICE_CONNECTION_NAME: $(SERVICE_CONNECTION_NAME)
+                DISPLAYNAME: Prepare Software Engineering VM Dependencies
+                COMMAND: make vm-softwareeng-fetch-dependencies
+
+  - job: Cleanup
+    dependsOn: PrepareSoftEngDeps
+    condition: always()
+    variables:
+      AGENT_IP: $[ dependencies.PrepareSoftEngDeps.outputs['PrepareSoftEngDeps.addAgentIp.AGENT_IP'] ]
+    steps:
+      - template: ../jobs/disable_mgmt_acr_access.yaml
+        parameters:
+          SERVICE_CONNECTION_NAME: $(SERVICE_CONNECTION_NAME)
+          ACR_NAME: $(ACR_NAME)
+          CLIENT_IP_ADRESS: $(AGENT_IP)

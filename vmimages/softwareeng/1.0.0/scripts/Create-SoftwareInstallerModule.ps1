@@ -1,300 +1,92 @@
-# Script to create the SoftwareInstaller PowerShell module during VM image build
+<#
+ Script to retrieve and install the SoftwareInstaller PowerShell module during VM image build.
+ Instead of embedding the module contents, this script downloads the manifest (.psd1) and module (.psm1)
+ from an Azure Storage account (private) using a managed identity.
 
-Write-Host 'Creating SoftwareInstaller PowerShell module directory...'
-$moduleDir = 'C:\Program Files\WindowsPowerShell\Modules\SoftwareInstaller'
-New-Item -ItemType Directory -Path $moduleDir -Force | Out-Null
+ Required environment variables:
+   SOFTWARE_STORAGE_PREFIX   e.g. https://stsftXXXX.blob.core.windows.net/installers/
+                              (must end with a trailing / and point to the container root path used during upload)
+   MANAGED_IDENTITY_CLIENT_ID  Client ID of the user-assigned managed identity with Storage Blob Data Reader access
 
-Write-Host 'Creating module manifest file...'
-$manifestContent = @'
-@{
-RootModule = 'SoftwareInstaller.psm1'
-ModuleVersion = '1.0.0'
-GUID = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890'
-Author = 'Azure TRE Team'
-CompanyName = 'Microsoft'
-Copyright = '(c) Microsoft Corporation. All rights reserved.'
-Description = 'PowerShell module for downloading and installing software from Azure Storage Account using managed identity authentication. Designed for Azure TRE VM image provisioning.'
-PowerShellVersion = '5.1'
-FunctionsToExport = @('Get-StorageAccessToken', 'Download-SoftwareFromStorage', 'Install-Software', 'Install-SoftwareFromStorage', 'Get-ModuleVersion', 'Test-ModulePrerequisites', 'Remove-ModuleArtifacts')
-CmdletsToExport = @()
-VariablesToExport = '*'
-AliasesToExport = @()
-PrivateData = @{
-    PSData = @{
-        Tags = @('Azure', 'TRE', 'Storage', 'Software', 'Installation', 'ManagedIdentity', 'VM', 'Provisioning')
-        LicenseUri = 'https://github.com/microsoft/AzureTRE/blob/main/LICENSE'
-        ProjectUri = 'https://github.com/microsoft/AzureTRE'
-        ReleaseNotes = 'Version 1.0.0: Initial release of SoftwareInstaller module'
-    }
+ Optional environment variables:
+   SOFTWARE_INSTALLER_VERSION  (defaults to 1.0.0)
+
+ The upload script placed files at: softwareeng/SoftwareInstaller/<version>/SoftwareInstaller.psd1 & .psm1
+ This script reconstructs a standard PowerShell module folder layout:
+   C:\Program Files\WindowsPowerShell\Modules\SoftwareInstaller\<version>\SoftwareInstaller.psd1
+   C:\Program Files\WindowsPowerShell\Modules\SoftwareInstaller\<version>\SoftwareInstaller.psm1
+#>
+
+Write-Host 'Preparing to download SoftwareInstaller module from Azure Storage...'
+
+$ErrorActionPreference = 'Stop'
+
+# Validate required environment variables
+if (-not $env:SOFTWARE_STORAGE_PREFIX) {
+    Write-Error 'SOFTWARE_STORAGE_PREFIX environment variable is required (e.g. https://<acct>.blob.core.windows.net/installers/).'
+    exit 1
 }
+if (-not $env:MANAGED_IDENTITY_CLIENT_ID) {
+    Write-Error 'MANAGED_IDENTITY_CLIENT_ID environment variable is required.'
+    exit 1
 }
-'@
 
-$manifestContent | Out-File -FilePath "$moduleDir\SoftwareInstaller.psd1" -Encoding UTF8
-Write-Host 'Module manifest created successfully'
+$moduleVersion = if ($env:SOFTWARE_INSTALLER_VERSION) { $env:SOFTWARE_INSTALLER_VERSION } else { '1.0.0' }
+$storagePrefix = $env:SOFTWARE_STORAGE_PREFIX.TrimEnd('/') + '/'
+$clientId = $env:MANAGED_IDENTITY_CLIENT_ID
 
-Write-Host 'Creating module implementation file...'
-# Using direct file copy approach instead of embedding huge here-string
-$moduleContent = @'
-# SoftwareInstaller PowerShell Module
-# This module provides functions to download and install software from Azure Storage Account
-# Author: Azure TRE Team
-# Version: 1.0.0
+$relativePathRoot = "softwareeng/SoftwareInstaller/$moduleVersion"  # matches upload script
+$files = @('SoftwareInstaller.psd1','SoftwareInstaller.psm1')
 
-#Requires -Version 5.1
+# Target module directory (use version subfolder to align with PS module resolution)
+$moduleBase = 'C:\Program Files\WindowsPowerShell\Modules\SoftwareInstaller'
+$moduleDir = Join-Path $moduleBase $moduleVersion
+if (-not (Test-Path $moduleDir)) {
+    Write-Host "Creating module directory: $moduleDir"
+    New-Item -ItemType Directory -Path $moduleDir -Force | Out-Null
+}
 
-Write-Verbose "Loading SoftwareInstaller module..."
+function Get-AccessToken {
+    param([string]$ClientId)
+    $imds = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&client_id=$ClientId&resource=https%3A%2F%2Fstorage.azure.com%2F"
+    Write-Host "Requesting access token for managed identity $ClientId ..."
+    $resp = Invoke-RestMethod -Uri $imds -Headers @{ Metadata = 'true' } -Method GET
+    return $resp.access_token
+}
 
-$script:ModuleVersion = '1.0.0'
-$script:DefaultSetupPath = 'C:\Setup'
-$script:DefaultStorageApiVersion = '2017-11-09'
-
-function Write-ModuleLog {
-    [CmdletBinding()]
+function Download-BlobFile {
     param(
-        [Parameter(Mandatory = $true)][string]$Message,
-        [Parameter(Mandatory = $false)][ValidateSet('Info', 'Warning', 'Error', 'Success')][string]$Level = 'Info'
+        [Parameter(Mandatory)][string]$BlobUrl,
+        [Parameter(Mandatory)][string]$DestinationPath,
+        [Parameter(Mandatory)][string]$AccessToken
     )
-    $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
-    $logMessage = "[$timestamp] [SoftwareInstaller] [$Level] $Message"
-    switch ($Level) {
-        'Info' { Write-Host $logMessage -ForegroundColor Cyan }
-        'Warning' { Write-Host $logMessage -ForegroundColor Yellow }
-        'Error' { Write-Host $logMessage -ForegroundColor Red }
-        'Success' { Write-Host $logMessage -ForegroundColor Green }
-    }
+    Write-Host "Downloading $BlobUrl -> $DestinationPath"
+    $headers = @{ 'Authorization' = "Bearer $AccessToken"; 'x-ms-version' = '2017-11-09' }
+    Invoke-WebRequest -Uri $BlobUrl -Headers $headers -UseBasicParsing -OutFile $DestinationPath
+    if (-not (Test-Path $DestinationPath)) { throw "Failed to download $BlobUrl" }
 }
 
-function Get-StorageAccessToken {
-    [CmdletBinding()]
-    param([Parameter(Mandatory = $true)][string]$ManagedIdentityClientId)
-    try {
-        Write-ModuleLog "Obtaining access token using managed identity: $ManagedIdentityClientId"
-        $uri = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&client_id=$ManagedIdentityClientId&resource=https%3A%2F%2Fstorage.azure.com%2F"
-        $response = Invoke-WebRequest -Uri $uri -Method GET -Headers @{Metadata = "true" } -UseBasicParsing
-        $content = $response.Content | ConvertFrom-Json
-        Write-ModuleLog "Access token obtained successfully" -Level Success
-        return $content.access_token
-    }
-    catch {
-        Write-ModuleLog "Failed to obtain access token: $($_.Exception.Message)" -Level Error
-        throw
-    }
-}
-
-function Download-SoftwareFromStorage {
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory = $true)][string]$StorageBlobUrl,
-        [Parameter(Mandatory = $true)][string]$AccessToken,
-        [Parameter(Mandatory = $true)][string]$DestinationPath
-    )
-    try {
-        $destinationDir = Split-Path -Path $DestinationPath -Parent
-        if (-not (Test-Path -Path $destinationDir)) {
-            New-Item -ItemType Directory -Force -Path $destinationDir | Out-Null
-            Write-ModuleLog "Created directory: $destinationDir"
-        }
-        Write-ModuleLog "Downloading from '$StorageBlobUrl' to '$DestinationPath' - StartTime: $(Get-Date)"
-        $elapsedTime = Measure-Command {
-            $wc = New-Object System.Net.WebClient
-            $wc.Headers['Authorization'] = "Bearer $AccessToken"
-            $wc.Headers['x-ms-version'] = $script:DefaultStorageApiVersion
-            $wc.DownloadFile($StorageBlobUrl, $DestinationPath)
-        }
-        Write-ModuleLog "Download complete in $($elapsedTime.TotalSeconds) seconds - EndTime: $(Get-Date)" -Level Success
-        if (-not (Test-Path -Path $DestinationPath)) {
-            throw "File was not downloaded successfully"
-        }
-        $fileInfo = Get-Item -Path $DestinationPath
-        Write-ModuleLog "Downloaded file size: $($fileInfo.Length) bytes"
-        return $DestinationPath
-    }
-    catch {
-        Write-ModuleLog "Failed to download software: $($_.Exception.Message)" -Level Error
-        throw
-    }
-}
-
-function Install-Software {
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory = $true)][string]$InstallerPath,
-        [Parameter(Mandatory = $true)][string]$InstallArguments,
-        [Parameter(Mandatory = $true)][string]$SoftwareName
-    )
-    try {
-        if (-not (Test-Path -Path $InstallerPath)) {
-            throw "Installer not found at path: $InstallerPath"
-        }
-        Write-ModuleLog "Installing $SoftwareName..."
-        Write-ModuleLog "Installer: $InstallerPath"
-        Write-ModuleLog "Arguments: $InstallArguments"
-        $startTime = Get-Date
-        $process = Start-Process -FilePath $InstallerPath -ArgumentList $InstallArguments -Wait -PassThru
-        $endTime = Get-Date
-        $duration = $endTime - $startTime
-        Write-ModuleLog "Installation process completed in $($duration.TotalSeconds) seconds"
-        Write-ModuleLog "Exit code: $($process.ExitCode)"
-        if ($process.ExitCode -eq 0) {
-            Write-ModuleLog "$SoftwareName installation completed successfully" -Level Success
-        } else {
-            Write-ModuleLog "$SoftwareName installation completed with exit code: $($process.ExitCode)" -Level Warning
-        }
-        return $process.ExitCode
-    }
-    catch {
-        Write-ModuleLog "Failed to install ${SoftwareName}: $($_.Exception.Message)" -Level Error
-        throw
-    }
-}
-
-function Install-SoftwareFromStorage {
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory = $true)][string]$InstallerName,
-        [Parameter(Mandatory = $true)][string]$InstallArguments,
-        [Parameter(Mandatory = $true)][string]$SoftwareName,
-        [Parameter(Mandatory = $false)][string]$StorageBlobPrefix = $env:SOFTWARE_STORAGE_PREFIX,
-        [Parameter(Mandatory = $false)][string]$ManagedIdentityClientId = $env:MANAGED_IDENTITY_CLIENT_ID,
-        [Parameter(Mandatory = $false)][string]$SetupPath = $script:DefaultSetupPath
-    )
-    try {
-        Write-ModuleLog "=========================================="
-        Write-ModuleLog "Installing $SoftwareName"
-        Write-ModuleLog "=========================================="
-        if ([string]::IsNullOrEmpty($StorageBlobPrefix)) {
-            throw "StorageBlobPrefix is required. Please provide it as a parameter or set the SOFTWARE_STORAGE_PREFIX environment variable."
-        }
-        if ([string]::IsNullOrEmpty($ManagedIdentityClientId)) {
-            throw "ManagedIdentityClientId is required. Please provide it as a parameter or set the MANAGED_IDENTITY_CLIENT_ID environment variable."
-        }
-        $storageBlobUrl = "${StorageBlobPrefix}softwareeng/${InstallerName}"
-        $installerPath = Join-Path -Path $SetupPath -ChildPath $InstallerName
-        Write-ModuleLog "Storage Blob URL: $storageBlobUrl"
-        Write-ModuleLog "Local Installer Path: $installerPath"
-        $accessToken = Get-StorageAccessToken -ManagedIdentityClientId $ManagedIdentityClientId
-        Download-SoftwareFromStorage -StorageBlobUrl $storageBlobUrl -AccessToken $accessToken -DestinationPath $installerPath
-        $exitCode = Install-Software -InstallerPath $installerPath -InstallArguments $InstallArguments -SoftwareName $SoftwareName
-        Write-ModuleLog "=========================================="
-        Write-ModuleLog "$SoftwareName installation process completed"
-        Write-ModuleLog "=========================================="
-        return $exitCode
-    }
-    catch {
-        Write-ModuleLog "Failed to install ${SoftwareName} from storage: $($_.Exception.Message)" -Level Error
-        throw
-    }
-}
-
-function Get-ModuleVersion {
-    [CmdletBinding()]
-    param()
-    return $script:ModuleVersion
-}
-
-function Test-ModulePrerequisites {
-    [CmdletBinding()]
-    param()
-    $results = @{
-        PowerShellVersion = $true
-        NetworkConnectivity = $true
-        RequiredCmdlets = $true
-        OverallStatus = $true
-        Issues = @()
-    }
-    try {
-        if ($PSVersionTable.PSVersion.Major -lt 5) {
-            $results.PowerShellVersion = $false
-            $results.OverallStatus = $false
-            $results.Issues += "PowerShell version 5.1 or higher is required. Current version: $($PSVersionTable.PSVersion)"
-        }
-        try {
-            $testUri = "http://169.254.169.254/metadata/instance?api-version=2021-02-01"
-            $response = Invoke-WebRequest -Uri $testUri -Method GET -Headers @{Metadata = "true"} -TimeoutSec 5 -UseBasicParsing -ErrorAction Stop
-            Write-ModuleLog "Network connectivity to Azure IMDS: OK"
-        }
-        catch {
-            $results.NetworkConnectivity = $false
-            $results.OverallStatus = $false
-            $results.Issues += "Cannot connect to Azure Instance Metadata Service (IMDS). This module requires running on an Azure VM."
-        }
-        $requiredCmdlets = @('Invoke-WebRequest', 'Start-Process', 'Test-Path', 'New-Item')
-        foreach ($cmdlet in $requiredCmdlets) {
-            if (-not (Get-Command $cmdlet -ErrorAction SilentlyContinue)) {
-                $results.RequiredCmdlets = $false
-                $results.OverallStatus = $false
-                $results.Issues += "Required cmdlet '$cmdlet' is not available."
-            }
-        }
-        if ($results.OverallStatus) {
-            Write-ModuleLog "All module prerequisites are met" -Level Success
-        } else {
-            Write-ModuleLog "Some module prerequisites are not met:" -Level Warning
-            foreach ($issue in $results.Issues) {
-                Write-ModuleLog "  - $issue" -Level Warning
-            }
-        }
-        return $results
-    }
-    catch {
-        Write-ModuleLog "Error checking module prerequisites: $($_.Exception.Message)" -Level Error
-        $results.OverallStatus = $false
-        $results.Issues += "Error during prerequisite check: $($_.Exception.Message)"
-        return $results
-    }
-}
-
-function Remove-ModuleArtifacts {
-    [CmdletBinding(SupportsShouldProcess)]
-    param(
-        [Parameter(Mandatory = $false)][string]$SetupPath = $script:DefaultSetupPath,
-        [Parameter(Mandatory = $false)][switch]$Force
-    )
-    try {
-        if (Test-Path -Path $SetupPath) {
-            if ($Force -or $PSCmdlet.ShouldProcess("$SetupPath", "Remove directory and contents")) {
-                Remove-Item -Path $SetupPath -Recurse -Force
-                Write-ModuleLog "Cleaned up setup directory: $SetupPath" -Level Success
-            }
-        } else {
-            Write-ModuleLog "Setup directory does not exist: $SetupPath"
-        }
-    }
-    catch {
-        Write-ModuleLog "Error cleaning up module artifacts: $($_.Exception.Message)" -Level Error
-        throw
-    }
-}
-
-Export-ModuleMember -Function Get-StorageAccessToken, Download-SoftwareFromStorage, Install-Software, Install-SoftwareFromStorage, Get-ModuleVersion, Test-ModulePrerequisites, Remove-ModuleArtifacts
-
-Write-ModuleLog "SoftwareInstaller module v$script:ModuleVersion loaded successfully" -Level Success
-'@
-
-$moduleContent | Out-File -FilePath "$moduleDir\SoftwareInstaller.psm1" -Encoding UTF8
-Write-Host 'Module implementation created successfully'
-
-# Test the module
-Write-Host 'Testing module installation...'
 try {
-    Import-Module $moduleDir -Force
-    $version = Get-ModuleVersion
-    Write-Host "SoftwareInstaller module v$version installed and tested successfully" -ForegroundColor Green
-
-    Write-Host 'Testing module prerequisites...'
-    $prereq = Test-ModulePrerequisites
-    if ($prereq.OverallStatus) {
-        Write-Host 'All module prerequisites met' -ForegroundColor Green
-    } else {
-        Write-Host 'Module prerequisite warnings (this is expected during image build):' -ForegroundColor Yellow
-        $prereq.Issues | ForEach-Object { Write-Host "  - $_" -ForegroundColor Yellow }
+    $token = Get-AccessToken -ClientId $clientId
+    foreach ($file in $files) {
+        $blobUrl = "$storagePrefix$relativePathRoot/$file"
+        $dest = Join-Path $moduleDir $file
+        Download-BlobFile -BlobUrl $blobUrl -DestinationPath $dest -AccessToken $token
     }
+    Write-Host "Downloaded module files successfully." -ForegroundColor Green
 
-    Remove-Module SoftwareInstaller -Force
-    Write-Host 'Module installation completed successfully!' -ForegroundColor Green
+    # Quick validation: import the module
+    Import-Module (Join-Path $moduleDir 'SoftwareInstaller.psd1') -Force -ErrorAction Stop
+    $mod = Get-Module SoftwareInstaller
+    if ($mod -and $mod.Version.ToString() -eq $moduleVersion) {
+        Write-Host "SoftwareInstaller module v$moduleVersion imported successfully." -ForegroundColor Green
+    } else {
+        Write-Warning 'Module imported but version mismatch or not found.'
+    }
+    Remove-Module SoftwareInstaller -Force -ErrorAction SilentlyContinue
+    Write-Host 'Module installation completed.' -ForegroundColor Green
 }
 catch {
-    Write-Error "Module installation failed: $($_.Exception.Message)"
+    Write-Error "Failed to download / install SoftwareInstaller module: $($_.Exception.Message)"
     throw
 }

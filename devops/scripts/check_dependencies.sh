@@ -68,7 +68,7 @@ if [ -n "${TF_IN_AUTOMATION:-}" ]; then
   else
     az login --service-principal -u "$ARM_CLIENT_ID" -p "$ARM_CLIENT_SECRET" --tenant "$ARM_TENANT_ID"
   fi
-    
+
     az account set -s "$ARM_SUBSCRIPTION_ID"
 fi
 

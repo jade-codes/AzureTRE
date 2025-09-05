@@ -1,0 +1,43 @@
+parameters:
+  - name: LOCK_ENV
+    displayName: "Lock environment name (e.g. dev) - required"
+    type: string
+    values:
+      - dev
+      - prod
+
+jobs:
+  - deployment: DeploySoftEngTemplate
+    displayName: Deploy Software Engineering VM Template
+    environment: ${{ parameters.LOCK_ENV }}
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - template: ../jobs/enable_mgmt_acr_access.yaml
+              parameters:
+                SERVICE_CONNECTION_NAME: $(SERVICE_CONNECTION_NAME)
+                ACR_NAME: $(ACR_NAME)
+
+            - template: ../jobs/build_devcontainer.yaml
+              parameters:
+                SERVICE_CONNECTION_NAME: "$(SERVICE_CONNECTION_NAME)"
+                ACR_NAME: $(ACR_NAME)
+
+            - template: ../jobs/run_command_using_devcontainer.yaml
+              parameters:
+                SERVICE_CONNECTION_NAME: $(SERVICE_CONNECTION_NAME)
+                DISPLAYNAME: Deploy Software Engineering VM Template
+                COMMAND: make vm-softwareeng-deploy
+
+  - job: Cleanup
+    dependsOn: DeploySoftEngTemplate
+    condition: always()
+    variables:
+      AGENT_IP: $[ dependencies.DeploySoftEngTemplate.outputs['DeploySoftEngTemplate.addAgentIp.AGENT_IP'] ]
+    steps:
+      - template: ../jobs/disable_mgmt_acr_access.yaml
+        parameters:
+          SERVICE_CONNECTION_NAME: $(SERVICE_CONNECTION_NAME)
+          ACR_NAME: $(ACR_NAME)
+          CLIENT_IP_ADRESS: $(AGENT_IP)

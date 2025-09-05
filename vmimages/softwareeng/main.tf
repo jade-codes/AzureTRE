@@ -34,7 +34,7 @@ provider "azurerm" {
 
 data "azurerm_shared_image_gallery" "vmi_gallery" {
   name                = local.shared_image_gallery_name
-  resource_group_name = var.resource_group_name
+  resource_group_name = local.core_resource_group_name
 }
 
 data "azurerm_subscription" "current" {
@@ -44,7 +44,7 @@ resource "azurerm_shared_image" "softwareengvmi" {
   name                = "softwareengvmi"
   gallery_name        = data.azurerm_shared_image_gallery.vmi_gallery.name
   location            = var.location
-  resource_group_name = var.resource_group_name
+  resource_group_name = local.core_resource_group_name
   os_type             = "Windows"
   hyper_v_generation  = "V2"
 
@@ -60,6 +60,6 @@ module "softwareeng_v1_0_0" {
 
   tre_id              = var.tre_id
   location            = var.location
-  resource_group_name = var.resource_group_name
+  resource_group_name = local.core_resource_group_name
   tre_core_tags       = local.tre_core_tags
 }

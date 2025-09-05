@@ -12,6 +12,13 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+# Script / module paths
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SOFTWARE_INSTALLER_VERSION="1.0.0"
+SOFTWARE_INSTALLER_DIR_DEFAULT="${SCRIPT_DIR}/../1.0.0/scripts/SoftwareInstaller"
+# Allow override via env var SOFTWARE_INSTALLER_DIR_OVERRIDE
+SOFTWARE_INSTALLER_DIR="${SOFTWARE_INSTALLER_DIR_OVERRIDE:-$SOFTWARE_INSTALLER_DIR_DEFAULT}"
+
 # Function to print colored output
 print_info() {
     echo -e "${BLUE}[INFO]${NC} $1"
@@ -153,6 +160,71 @@ upload_file() {
     print_success "Uploaded $filename to softwareeng/$destination_path"
 }
 
+# Ensure target container exists (idempotent)
+ensure_container() {
+    print_info "Ensuring 'installers' container exists..."
+    az storage container create \
+        --account-name "$STORAGE_ACCOUNT_NAME" \
+        --name installers \
+        --auth-mode login \
+        --public-access off \
+        --output none 2>/dev/null || true
+}
+
+# Upload a single local file (not downloaded) to storage
+upload_local_file() {
+    local full_path=$1      # absolute or relative path to local file
+    local remote_rel_path=$2  # path relative to softwareeng/ prefix
+
+    if [[ ! -f "$full_path" ]]; then
+        print_warning "Local file not found (skipping): $full_path"
+        return 0
+    fi
+
+    print_info "Uploading local file $full_path -> softwareeng/$remote_rel_path"
+    az storage blob upload \
+        --account-name "$STORAGE_ACCOUNT_NAME" \
+        --container-name installers \
+        --name "softwareeng/$remote_rel_path" \
+        --file "$full_path" \
+        --auth-mode login \
+        --overwrite \
+        --output none
+    print_success "Uploaded local file to softwareeng/$remote_rel_path"
+}
+
+# Upload selected local files (e.g., SoftwareInstaller module)
+upload_local_files() {
+    print_info "Uploading selected local files (SoftwareInstaller module)"
+
+    local failures=()
+
+    # Build associative array of local->remote relative path
+    declare -A local_map
+    local_map["${SOFTWARE_INSTALLER_DIR}/SoftwareInstaller.psm1"]="SoftwareInstaller/${SOFTWARE_INSTALLER_VERSION}/SoftwareInstaller.psm1"
+    local_map["${SOFTWARE_INSTALLER_DIR}/SoftwareInstaller.psd1"]="SoftwareInstaller/${SOFTWARE_INSTALLER_VERSION}/SoftwareInstaller.psd1"
+    local_map["${SCRIPT_DIR}/../1.0.0/scripts/Git-Configure.ps1"]="Git-Configure.ps1"
+    local_map["${SCRIPT_DIR}/../1.0.0/scripts/Podman-Local-Setup.ps1"]="Podman-Local-Setup.ps1"
+
+    for local_path in "${!local_map[@]}"; do
+        local remote_path="${local_map[$local_path]}"
+        if ! upload_local_file "$local_path" "$remote_path"; then
+            failures+=("$local_path")
+        fi
+    done
+
+    if [[ ${#failures[@]} -gt 0 ]]; then
+        print_error "Some local files failed to upload:"
+        for f in "${failures[@]}"; do
+            echo "  - $f"
+        done
+        return 1
+    else
+        print_success "Local file upload phase complete"
+        return 0
+    fi
+}
+
 # Download all dependencies
 download_dependencies() {
     print_info "Starting download of all dependencies..."
@@ -166,6 +238,8 @@ download_dependencies() {
         ["https://github.com/microsoft/WSL/releases/download/2.5.10/wsl.2.5.10.0.x64.msi"]="wsl.2.5.10.0.x64.msi:wsl.2.5.10.0.x64.msi"
         ["https://www.python.org/ftp/python/3.13.7/python-3.13.7-amd64.exe"]="python-3.13.7-amd64.exe:python-3.13.7-amd64.exe"
     )
+
+
 
     local failed_downloads=()
 
@@ -216,7 +290,25 @@ main() {
     trap 'remove_firewall_rule; print_info "Cleaning up temporary directory..."; rm -rf "$TEMP_DIR"' EXIT
 
     # Download and upload dependencies
+    ensure_container
+
+    local overall_status=0
+
     if download_dependencies; then
+        print_success "Dependency download/upload phase complete"
+    else
+        overall_status=1
+        print_warning "Continuing despite dependency errors"
+    fi
+
+    if upload_local_files; then
+        print_success "Local file upload phase complete"
+    else
+        overall_status=1
+        print_warning "Local file upload encountered errors"
+    fi
+
+    if [[ $overall_status -eq 0 ]]; then
         print_success "Script completed successfully!"
         exit 0
     else

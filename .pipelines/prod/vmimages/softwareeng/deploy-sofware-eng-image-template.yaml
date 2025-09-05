@@ -1,0 +1,14 @@
+trigger: none
+
+variables:
+  - group: tre-core-variables-prod
+  - group: tre-core-auth-secrets-prod
+  - group: azure-environment
+
+pool:
+  vmImage: ubuntu-latest
+
+jobs:
+  - template: /.pipelines/jobs/deploy-sofware-eng-image-template.yaml
+    parameters:
+      LOCK_ENV: "prod"

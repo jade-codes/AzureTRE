@@ -1,12 +1,6 @@
 data "azurerm_subscription" "current" {
 }
 
-# resource "azurerm_resource_group" "build_resource_group" {
-#   name     = local.software_eng_resource_group_name
-#   location = var.location
-#   tags     = var.tre_core_tags
-# }
-
 data "azurerm_resource_group" "software_eng" {
   name = var.resource_group_name
 }
@@ -148,6 +142,11 @@ resource "azapi_resource" "softwareengwin" {
       errorHandling = {
         onCustomizerError = "cleanup"
         onValidationError = "cleanup"
+      }
+      managedResourceTags = {
+        "SecurityControl" = "Ignore"
+        "Automation"      = "Ignore"
+        "CostControl"     = "Ignore"
       }
       customize = [
         {
