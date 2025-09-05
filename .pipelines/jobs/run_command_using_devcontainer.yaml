@@ -32,7 +32,9 @@ steps:
         SUBSCRIPTION_ID=$(az account show --query id -o tsv)
 
         a=\"image_gallery_id\":\"$(COMPUTE_GALLERY_ID)\"
-        RP_BUNDLE_VALUES="{$a}"
+        b=\"HF_TOKEN\":\"$(HF_TOKEN)\"
+        c=\"INITIAL_ADMIN_PASSWORD\":\"$(INITIAL_ADMIN_PASSWORD)\"
+        RP_BUNDLE_VALUES="{$a,$b,$c}"
 
         docker run --rm --mount \
           "type=bind,src=$(System.DefaultWorkingDirectory),dst=/workspaces/tre" \
