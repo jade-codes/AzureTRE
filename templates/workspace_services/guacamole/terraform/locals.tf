@@ -18,6 +18,9 @@ locals {
     tre_id                   = var.tre_id
     tre_workspace_id         = var.workspace_id
     tre_workspace_service_id = var.tre_resource_id
+    # For use in an Microsoft Internal Tenant only!
+    "SecurityControl" = "Ignore"
+    "CostControl"     = "Ignore"
   }
   guacamole_diagnostic_categories_enabled = [
     "AppServiceHTTPLogs", "AppServiceConsoleLogs", "AppServiceAppLogs",

@@ -23,6 +23,9 @@ locals {
     tre_user_resource_id     = var.tre_resource_id
     tre_user_id              = var.owner_id
     tre_user_username        = var.admin_username == "" ? local.admin_username : var.admin_username
+    # For use in an Microsoft Internal Tenant only!
+    "SecurityControl" = "Ignore"
+    "CostControl"     = "Ignore"
   }
   nexus_proxy_url = "https://nexus-${data.azurerm_public_ip.app_gateway_ip.fqdn}"
 

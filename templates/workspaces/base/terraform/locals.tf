@@ -8,6 +8,9 @@ locals {
   tre_workspace_tags = {
     tre_id           = var.tre_id
     tre_workspace_id = var.tre_resource_id
+    # For use in an Microsoft Internal Tenant only!
+    "SecurityControl" = "Ignore"
+    "CostControl"     = "Ignore"
   }
   kv_encryption_key_name   = "tre-encryption-${local.workspace_resource_name_suffix}"
   encryption_identity_name = "id-encryption-${var.tre_id}-${local.short_workspace_id}"

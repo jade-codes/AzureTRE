@@ -562,3 +562,11 @@ vm-softwareeng-deploy:
 	&& . ${MAKEFILE_DIR}/devops/scripts/load_env.sh ${MAKEFILE_DIR}/core/private.env \
 	&& pushd ${MAKEFILE_DIR}/vmimages/softwareeng > /dev/null && ./deploy.sh && popd > /dev/null
 
+# Description: Apply MCAPS control tags to a resource group to exclude it from certain policies
+# Arguments: RESOURCE_GROUP - the resource group to tag
+# Example: make add-mcaps-tags-to-resource-group RESOURCE_GROUP=my-resource-group
+add-mcaps-tags-to-resource-group:
+	$(call target_title,"Adding tags to resource group") \
+	&& . ${MAKEFILE_DIR}/devops/scripts/check_dependencies.sh nodocker,env \
+	&& . ${MAKEFILE_DIR}/devops/scripts/load_env.sh ${MAKEFILE_DIR}/core/private.env \
+	&& ${MAKEFILE_DIR}/devops/scripts/add_tags_to_resource_group.sh "$${RESOURCE_GROUP}" "SecurityControl=Ignore" "CostControl=Ignore" --include-rg

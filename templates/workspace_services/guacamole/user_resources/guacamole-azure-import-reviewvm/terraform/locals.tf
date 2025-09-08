@@ -12,6 +12,9 @@ locals {
     tre_workspace_id         = var.workspace_id
     tre_workspace_service_id = var.parent_service_id
     tre_user_resource_id     = var.tre_resource_id
+    # For use in an Microsoft Internal Tenant only!
+    "SecurityControl" = "Ignore"
+    "CostControl"     = "Ignore"
   }
 
   # Load VM SKU/image details from porter.yaml
