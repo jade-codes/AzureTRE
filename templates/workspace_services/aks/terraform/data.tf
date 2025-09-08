@@ -38,6 +38,7 @@ data "azurerm_log_analytics_workspace" "tre" {
 
 data "azurerm_private_dns_zone" "aks" {
   name = "privatelink.${data.azurerm_resource_group.ws.location}.azmk8s.io"
+  resource_group_name = local.core_resource_group_name
 }
 
 data "azurerm_key_vault" "ws" {

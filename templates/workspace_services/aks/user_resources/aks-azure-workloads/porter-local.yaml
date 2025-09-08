@@ -16,14 +16,13 @@ parameters:
   - name: initial_admin_password
     type: string
     env: INITIAL_ADMIN_PASSWORD
+    default: "ChangeMe123!"
     sensitive: true
-    default: admin123
   - name: hf_token
     type: string
     env: HF_TOKEN
+    default: "changeme"
     sensitive: true
-    default: hf_token_value
-
 mixins:
   - exec
   - helm3

@@ -1,7 +1,7 @@
 ---
 schemaVersion: 1.0.0
 name: tre-service-aks-workloads
-version: 1.0.0
+version: 1.0.1
 description: "Deploy workloads in AKS"
 dockerfile: Dockerfile.tmpl
 registry: azuretre
@@ -58,9 +58,13 @@ parameters:
   - name: initial_admin_password
     type: string
     env: INITIAL_ADMIN_PASSWORD
+    default: "ChangeMe123!"
+    sensitive: true
   - name: hf_token
     type: string
     env: HF_TOKEN
+    default: "changeme"
+    sensitive: true
 
   # the following are added automatically by the resource processor
   - name: id
