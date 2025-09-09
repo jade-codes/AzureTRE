@@ -1,7 +1,7 @@
 ---
 schemaVersion: 1.0.0
 name: tre-service-guacamole-export-reviewvm
-version: 0.3.3
+version: 0.4.6
 description: "An Azure TRE User Resource Template for reviewing Airlock export requests"
 dockerfile: Dockerfile.tmpl
 registry: azuretre
@@ -11,14 +11,10 @@ custom:
   vm_sizes:
     "2 CPU | 8GB RAM": Standard_D2s_v5
   image_options:
-    "Server 2019 Data Science VM":
-      source_image_reference:
-        publisher: microsoft-dsvm
-        offer: dsvm-win-2019
-        sku: winserver-2019
-        version: latest
-      conda_config: true
-      secure_boot_enabled: false # dsvm-win-2019 is not a gen2 image
+    "Software Engineer VM":
+      source_image_name: softwareengvmi
+      conda_config: false
+      secure_boot_enabled: false
       vtpm_enabled: false
 
 credentials:
@@ -40,6 +36,10 @@ parameters:
     type: string
     description: "Resource group containing the shared ACR"
     env: PARENT_SERVICE_ID
+  - name: image_gallery_id
+    type: string
+    description: Azure resource ID for the compute image gallery to pull images from (if specifying custom images by name)
+    default: ""
   - name: id
     type: string
     description: "An Id for this installation"
@@ -69,7 +69,7 @@ parameters:
     default: "public"
   - name: os_image
     type: string
-    default: "Server 2019 Data Science VM"
+    default: "Software Engineer VM"
   - name: vm_size
     type: string
     default: "2 CPU | 8GB RAM"
@@ -125,6 +125,7 @@ install:
         tre_resource_id: ${ bundle.parameters.id }
         image: ${ bundle.parameters.os_image }
         vm_size: ${ bundle.parameters.vm_size }
+        image_gallery_id: ${ bundle.parameters.image_gallery_id }
         airlock_request_sas_url: ${ bundle.parameters.airlock_request_sas_url }
         enable_cmk_encryption: ${ bundle.parameters.enable_cmk_encryption }
         key_store_id: ${ bundle.parameters.key_store_id }
@@ -151,6 +152,7 @@ upgrade:
         tre_resource_id: ${ bundle.parameters.id }
         image: ${ bundle.parameters.os_image }
         vm_size: ${ bundle.parameters.vm_size }
+        image_gallery_id: ${ bundle.parameters.image_gallery_id }
         airlock_request_sas_url: "unused"
         enable_cmk_encryption: ${ bundle.parameters.enable_cmk_encryption }
         key_store_id: ${ bundle.parameters.key_store_id }
@@ -189,6 +191,7 @@ uninstall:
         tre_resource_id: ${ bundle.parameters.id }
         image: ${ bundle.parameters.os_image }
         vm_size: ${ bundle.parameters.vm_size }
+        image_gallery_id: ${ bundle.parameters.image_gallery_id }
         airlock_request_sas_url: "unused"
         enable_cmk_encryption: ${ bundle.parameters.enable_cmk_encryption }
         key_store_id: ${ bundle.parameters.key_store_id }
