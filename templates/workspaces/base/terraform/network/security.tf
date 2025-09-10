@@ -161,17 +161,17 @@ resource "azurerm_network_security_rule" "allow_outbound_webapps_to_services" {
 }
 
 resource "azurerm_network_security_rule" "allow_outbound_windows_activation" {
-  access                       = "Allow"
-  destination_port_ranges      = ["1688"]
-  destination_address_prefixes = ["*"] # Microsoft Activation Servers (azkms.core.windows.net), but the firewall sku doesn't support FQDNs
-  source_address_prefixes      = azurerm_subnet.services.address_prefixes
-  direction                    = "Outbound"
-  name                         = "outbound-to-windows-activation"
-  network_security_group_name  = azurerm_network_security_group.ws.name
-  priority                     = 150
-  protocol                     = "Tcp"
-  resource_group_name          = var.ws_resource_group_name
-  source_port_range            = "*"
+  access                      = "Allow"
+  destination_port_ranges     = ["1688"]
+  destination_address_prefix  = "*" # Microsoft Activation Servers (azkms.core.windows.net), but the firewall sku doesn't support FQDNs
+  source_address_prefixes     = azurerm_subnet.services.address_prefixes
+  direction                   = "Outbound"
+  name                        = "outbound-to-windows-activation"
+  network_security_group_name = azurerm_network_security_group.ws.name
+  priority                    = 150
+  protocol                    = "Tcp"
+  resource_group_name         = var.ws_resource_group_name
+  source_port_range           = "*"
 }
 
 resource "azurerm_network_security_rule" "allow_inbound_from_bastion" {
