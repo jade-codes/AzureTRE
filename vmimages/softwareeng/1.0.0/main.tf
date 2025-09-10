@@ -168,6 +168,13 @@ resource "azapi_resource" "softwareengwin" {
         },
         {
           type        = "PowerShell"
+          name        = "InstallAzureCLI"
+          runElevated = true
+          runAsSystem = true
+          inline      = split("\n", file("${path.module}/scripts/Install-AzureCLI.ps1"))
+        },
+        {
+          type        = "PowerShell"
           name        = "DownloadWSL"
           runElevated = true
           runAsSystem = true
@@ -248,6 +255,13 @@ resource "azapi_resource" "softwareengwin" {
           runElevated = true
           runAsSystem = true
           inline      = split("\n", file("${path.module}/scripts/Prepare-PodmanSetup.ps1"))
+        },
+        {
+          type        = "PowerShell"
+          name        = "DisableFirstRunExperience"
+          runElevated = true
+          runAsSystem = true
+          inline      = split("\n", file("${path.module}/scripts/Disable-FirstRunExperience.ps1"))
         }
       ]
 

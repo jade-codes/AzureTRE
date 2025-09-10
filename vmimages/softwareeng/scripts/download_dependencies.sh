@@ -237,6 +237,7 @@ download_dependencies() {
         ["https://github.com/containers/podman-machine-wsl-os/releases/download/v20250206061445/5.3-rootfs-amd64.tar.zst"]="5.3-rootfs-amd64.tar.zst:5.3-rootfs-amd64.tar.zst"
         ["https://github.com/microsoft/WSL/releases/download/2.5.10/wsl.2.5.10.0.x64.msi"]="wsl.2.5.10.0.x64.msi:wsl.2.5.10.0.x64.msi"
         ["https://www.python.org/ftp/python/3.13.7/python-3.13.7-amd64.exe"]="python-3.13.7-amd64.exe:python-3.13.7-amd64.exe"
+        ["https://azcliprod.blob.core.windows.net/msi/azure-cli-2.56.0-x64.msi"]="azure-cli.msi:azure-cli.msi"
     )
 
 
