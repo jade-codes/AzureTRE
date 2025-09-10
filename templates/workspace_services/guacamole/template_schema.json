@@ -125,6 +125,14 @@
                   "protocols": [
                     "TCP"
                   ]
+                },
+                {
+                  "name": "WindowsActivation",
+                  "description": "Allow access to Microsoft Activation Servers",
+                  "source_addresses": "{{ resource.properties.service_addresses }}",
+                  "destination_addresses": [ "*" ],
+                  "destination_ports": [ "1688" ],
+                  "protocols": [ "TCP" ]
                 }
               ]
             }
@@ -183,6 +191,14 @@
                   "protocols": [
                     "TCP"
                   ]
+                },
+                {
+                  "name": "WindowsActivation",
+                  "description": "Allow access to Microsoft Activation Servers",
+                  "source_addresses": "{{ resource.properties.service_addresses }}",
+                  "destination_addresses": [ "*" ],
+                  "destination_ports": [ "1688" ],
+                  "protocols": [ "TCP" ]
                 }
               ]
             }

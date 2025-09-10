@@ -9,3 +9,7 @@ output "web_apps_addresses" {
 output "admin_connection_uri" {
   value = "https://${azurerm_linux_web_app.guacamole.default_hostname}/guacamole"
 }
+
+output "service_addresses" {
+  value = jsonencode(data.azurerm_subnet.services.address_prefixes)
+}

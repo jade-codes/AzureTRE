@@ -38,6 +38,7 @@ resource "azurerm_windows_virtual_machine" "windowsvm" {
   encryption_at_host_enabled = true
   secure_boot_enabled        = local.secure_boot_enabled
   vtpm_enabled               = local.vtpm_enabled
+  license_type               = "Windows_Client"
 
   custom_data = base64encode(templatefile(
     "${path.module}/vm_config.ps1", {
