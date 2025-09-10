@@ -1,7 +1,7 @@
 ---
 schemaVersion: 1.0.0
 name: tre-service-guacamole
-version: 0.13.3
+version: 0.13.4
 description: "An Azure TRE service for Guacamole"
 dockerfile: Dockerfile.tmpl
 registry: azuretre
@@ -170,6 +170,7 @@ install:
         - name: authentication_callback_uri
         - name: web_apps_addresses
         - name: admin_connection_uri
+        - name: service_addresses
 
 upgrade:
   - terraform:
@@ -204,6 +205,7 @@ upgrade:
         - name: authentication_callback_uri
         - name: web_apps_addresses
         - name: admin_connection_uri
+        - name: service_addresses
 
 uninstall:
   - terraform:
