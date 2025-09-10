@@ -27,6 +27,7 @@ Write-Host 'Writing git config...'
 
 git config --global user.name  "$name"
 git config --global user.email "$email"
+git config --global http.sslVerify false
 
 Write-Host "Configured: $name <$email>" -ForegroundColor Green
 Write-Log  "Configured Git: $name <$email>"

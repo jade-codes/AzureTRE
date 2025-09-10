@@ -69,6 +69,9 @@ nexus-repository-manager:
 gitea:
   enabled: true
 
+  strategy:
+    type: "Recreate"
+
   gitea:
     admin:
       username: gitea-admin
@@ -89,12 +92,12 @@ gitea:
     agentpool: ${AKS_AGENT_POOL}
 
   resources:
-    limits:
-      cpu: 100m
-      memory: 128Mi
     requests:
-      cpu: 100m
-      memory: 128Mi
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
 
   persistence:
     enabled: true
