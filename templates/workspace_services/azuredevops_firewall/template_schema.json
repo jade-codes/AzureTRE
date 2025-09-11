@@ -96,12 +96,25 @@
                     "aexprodea1.vsaex.visualstudio.com",
                     "*.vstmrblob.vsassets.io",
                     "visualstudio.com",
-                    "aadcdn.msauth.net",
                     "amcdn.msftauth.net",
                     "azurecomcdn.azureedge.net",
                     "login.live.com",
-                    "logincdn.msauth.net",
-                    "js.monitor.azure.com"
+                    "js.monitor.azure.com",
+                    "login.microsoft.com",
+                    "*.aadcdn.msftauth.net",
+                    "*.aadcdn.msftauthimages.net",
+                    "*.aadcdn.msauthimages.net",
+                    "*.logincdn.msftauth.net",
+                    "*.msauth.net",
+                    "*.aadcdn.microsoftonline-p.com",
+                    "*.microsoftonline-p.com",
+                    "aadcdn.msftauth.net",
+                    "aadcdn.msftauthimages.net",
+                    "aadcdn.msauthimages.net",
+                    "logincdn.msftauth.net",
+                    "msauth.net",
+                    "aadcdn.microsoftonline-p.com",
+                    "microsoftonline-p.com"
                   ],
                   "protocols": [
                     {
@@ -117,7 +130,9 @@
                 {
                   "name": "microsoft-azdo-rp",
                   "description": "Allow AzDO FQDNs from resource processor",
-                  "source_ip_groups_in_core": ["ipg-resource-processor"],
+                  "source_ip_groups_in_core": [
+                    "ipg-resource-processor"
+                  ],
                   "target_fqdns": [
                     "dev.azure.com",
                     "*.dev.azure.com",
@@ -137,12 +152,25 @@
                     "aexprodea1.vsaex.visualstudio.com",
                     "*.vstmrblob.vsassets.io",
                     "visualstudio.com",
-                    "aadcdn.msauth.net",
                     "amcdn.msftauth.net",
                     "azurecomcdn.azureedge.net",
                     "login.live.com",
-                    "logincdn.msauth.net",
-                    "js.monitor.azure.com"
+                    "js.monitor.azure.com",
+                    "login.microsoft.com",
+                    "*.aadcdn.msftauth.net",
+                    "*.aadcdn.msftauthimages.net",
+                    "*.aadcdn.msauthimages.net",
+                    "*.logincdn.msftauth.net",
+                    "*.msauth.net",
+                    "*.aadcdn.microsoftonline-p.com",
+                    "*.microsoftonline-p.com",
+                    "aadcdn.msftauth.net",
+                    "aadcdn.msftauthimages.net",
+                    "aadcdn.msauthimages.net",
+                    "logincdn.msftauth.net",
+                    "msauth.net",
+                    "aadcdn.microsoftonline-p.com",
+                    "microsoftonline-p.com"
                   ],
                   "protocols": [
                     {
@@ -228,12 +256,25 @@
                     "aexprodea1.vsaex.visualstudio.com",
                     "*.vstmrblob.vsassets.io",
                     "visualstudio.com",
-                    "aadcdn.msauth.net",
                     "amcdn.msftauth.net",
                     "azurecomcdn.azureedge.net",
                     "login.live.com",
-                    "logincdn.msauth.net",
-                    "js.monitor.azure.com"
+                    "js.monitor.azure.com",
+                    "login.microsoft.com",
+                    "*.aadcdn.msftauth.net",
+                    "*.aadcdn.msftauthimages.net",
+                    "*.aadcdn.msauthimages.net",
+                    "*.logincdn.msftauth.net",
+                    "*.msauth.net",
+                    "*.aadcdn.microsoftonline-p.com",
+                    "*.microsoftonline-p.com",
+                    "aadcdn.msftauth.net",
+                    "aadcdn.msftauthimages.net",
+                    "aadcdn.msauthimages.net",
+                    "logincdn.msftauth.net",
+                    "msauth.net",
+                    "aadcdn.microsoftonline-p.com",
+                    "microsoftonline-p.com"
                   ],
                   "protocols": [
                     {
@@ -249,7 +290,9 @@
                 {
                   "name": "microsoft-azdo-rp",
                   "description": "Allow AzDO FQDNs from resource processor",
-                  "source_ip_groups_in_core": ["ipg-resource-processor"],
+                  "source_ip_groups_in_core": [
+                    "ipg-resource-processor"
+                  ],
                   "target_fqdns": [
                     "dev.azure.com",
                     "*.dev.azure.com",
@@ -269,12 +312,25 @@
                     "aexprodea1.vsaex.visualstudio.com",
                     "*.vstmrblob.vsassets.io",
                     "visualstudio.com",
-                    "aadcdn.msauth.net",
                     "amcdn.msftauth.net",
                     "azurecomcdn.azureedge.net",
                     "login.live.com",
-                    "logincdn.msauth.net",
-                    "js.monitor.azure.com"
+                    "js.monitor.azure.com",
+                    "login.microsoft.com",
+                    "*.aadcdn.msftauth.net",
+                    "*.aadcdn.msftauthimages.net",
+                    "*.aadcdn.msauthimages.net",
+                    "*.logincdn.msftauth.net",
+                    "*.msauth.net",
+                    "*.aadcdn.microsoftonline-p.com",
+                    "*.microsoftonline-p.com",
+                    "aadcdn.msftauth.net",
+                    "aadcdn.msftauthimages.net",
+                    "aadcdn.msauthimages.net",
+                    "logincdn.msftauth.net",
+                    "msauth.net",
+                    "aadcdn.microsoftonline-p.com",
+                    "microsoftonline-p.com"
                   ],
                   "protocols": [
                     {
