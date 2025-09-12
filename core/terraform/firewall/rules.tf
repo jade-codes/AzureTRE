@@ -220,15 +220,6 @@ resource "azurerm_firewall_policy_rule_collection_group" "core" {
         # Required binaries
         "acs-mirror.azureedge.net",
         "packages.aks.azure.com",
-        # Monitoring endpoints
-        "*.ods.opinsights.azure.com",
-        "*.oms.opinsights.azure.com",
-        "dc.services.visualstudio.com",
-        "*.in.applicationinsights.azure.com",
-        "*.monitoring.azure.com",
-        "global.handler.control.monitor.azure.com",
-        "*.ingest.monitor.azure.com",
-        "*.metrics.ingest.monitor.azure.com",
         # Policy endpoints
         "data.policy.core.windows.net",
         "store.policy.core.windows.net",

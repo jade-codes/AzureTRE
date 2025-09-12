@@ -26,3 +26,11 @@ output "aks_identity_principal_id" {
 output "workspace_address_space" {
   value = jsonencode(data.azurerm_virtual_network.ws.address_space)
 }
+
+output "grafana_endpoint" {
+  value = data.azurerm_dashboard_grafana.grafana.endpoint
+}
+
+output "prometheus_workspace_id" {
+  value = data.azurerm_monitor_workspace.amw.id
+}

@@ -82,3 +82,41 @@ resource "azurerm_private_dns_zone_virtual_network_link" "azure_monitor_agentsvc
   tags                  = var.tre_workspace_tags
   lifecycle { ignore_changes = [tags] }
 }
+
+resource "azurerm_private_dns_zone" "grafana" {
+  name                = "privatelink.grafana.azure.com"
+  resource_group_name = var.ws_resource_group_name
+  tags                = var.tre_workspace_tags
+
+  lifecycle { ignore_changes = [tags] }
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "grafana" {
+  name                  = "grafana-link"
+  resource_group_name   = var.ws_resource_group_name
+  virtual_network_id    = azurerm_virtual_network.ws.id
+  private_dns_zone_name = azurerm_private_dns_zone.grafana.name
+  registration_enabled  = false
+  tags                  = var.tre_workspace_tags
+
+  lifecycle { ignore_changes = [tags] }
+}
+
+resource "azurerm_private_dns_zone" "prometheus" {
+  name                = "privatelink.${var.location}.prometheus.monitor.azure.com"
+  resource_group_name = var.ws_resource_group_name
+  tags                = var.tre_workspace_tags
+
+  lifecycle { ignore_changes = [tags] }
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "prometheus" {
+  name                  = "prometheus-link"
+  resource_group_name   = var.ws_resource_group_name
+  virtual_network_id    = azurerm_virtual_network.ws.id
+  private_dns_zone_name = azurerm_private_dns_zone.prometheus.name
+  registration_enabled  = false
+  tags                  = var.tre_workspace_tags
+
+  lifecycle { ignore_changes = [tags] }
+}

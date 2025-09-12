@@ -46,3 +46,10 @@ output "services_addresses" {
   value = azurerm_subnet.services.address_prefixes
 }
 
+output "azure_monitor_prometheus_dns_zone_id" {
+  value = azurerm_private_dns_zone.prometheus.id
+}
+
+output "grafana_dns_zone_id" {
+  value = azurerm_private_dns_zone.grafana.id
+}

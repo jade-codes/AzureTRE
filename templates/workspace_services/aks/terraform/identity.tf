@@ -49,5 +49,11 @@ resource "azurerm_role_assignment" "kubectl_acrpull_role" {
 resource "azurerm_role_assignment" "managed_identity_aks_rbac_admin" {
   scope                = azurerm_kubernetes_cluster.aks.id
   role_definition_name = "Azure Kubernetes Service RBAC Cluster Admin"
-  principal_id         = data.azurerm_client_config.current.object_id // deployer - either CICD service principal or local user
+  principal_id         = data.azurerm_client_config.current.object_id
+}
+
+resource "azurerm_role_assignment" "grafana_monitoring_reader" {
+  scope                = azurerm_kubernetes_cluster.aks.id
+  role_definition_name = "Monitoring Reader"
+  principal_id         = data.azurerm_user_assigned_identity.grafana.principal_id
 }

@@ -30,6 +30,8 @@ resource "azurerm_storage_account" "stg" {
   # changing this value is destructive, hence attribute is in lifecycle.ignore_changes block below
   infrastructure_encryption_enabled = true
 
+  shared_access_key_enabled = false
+
   lifecycle { ignore_changes = [infrastructure_encryption_enabled, tags] }
 
   blob_properties {

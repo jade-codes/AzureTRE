@@ -10,6 +10,12 @@ resource "azurerm_kubernetes_cluster" "aks" {
     auto_scaling_enabled = true
     max_count            = 5
     min_count            = 1
+
+    upgrade_settings {
+      drain_timeout_in_minutes      = 0
+      max_surge                     = "10%"
+      node_soak_duration_in_minutes = 0
+    }
   }
 
   identity {
@@ -46,7 +52,44 @@ resource "azurerm_kubernetes_cluster" "aks" {
     default_nginx_controller = "Internal"
   }
 
+  monitor_metrics {
+    annotations_allowed = null
+    labels_allowed      = null
+  }
+
+  microsoft_defender {
+    log_analytics_workspace_id = data.azurerm_log_analytics_workspace.workspace.id
+  }
+
+  oms_agent {
+    log_analytics_workspace_id      = data.azurerm_log_analytics_workspace.workspace.id
+    msi_auth_for_monitoring_enabled = true
+  }
+
   lifecycle { ignore_changes = [tags] }
 
   depends_on = [azurerm_role_assignment.aks_dns_contributor_role, azurerm_role_assignment.aks_network_contributor]
+}
+
+
+module "logging" {
+  source                       = "./logging"
+  aks_cluster_name             = azurerm_kubernetes_cluster.aks.name
+  location                     = azurerm_kubernetes_cluster.aks.location
+  resource_group_name          = azurerm_kubernetes_cluster.aks.resource_group_name
+  private_link_scope_name      = local.private_link_scope_name
+  log_analytics_workspace_name = data.azurerm_log_analytics_workspace.workspace.name
+
+  depends_on = [azurerm_kubernetes_cluster.aks]
+}
+
+module "monitoring" {
+  source                  = "./monitoring"
+  aks_cluster_name        = azurerm_kubernetes_cluster.aks.name
+  location                = azurerm_kubernetes_cluster.aks.location
+  resource_group_name     = azurerm_kubernetes_cluster.aks.resource_group_name
+  private_link_scope_name = local.private_link_scope_name
+  monitor_workspace_name  = data.azurerm_monitor_workspace.amw.name
+
+  depends_on = [azurerm_kubernetes_cluster.aks]
 }

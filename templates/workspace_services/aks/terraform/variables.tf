@@ -20,6 +20,18 @@ variable "workspace_id" {
   type        = string
 }
 
+variable "metric_labels_allowlist" {
+  description = "Allowed labels for Prometheus metrics collection"
+  type        = string
+  default     = null
+}
+
+variable "metric_annotations_allowlist" {
+  description = "Allowed annotations for Prometheus metrics collection"
+  type        = string
+  default     = null
+}
+
 variable "mgmt_acr_name" {
   description = "The name of the management Azure Container Registry."
   type        = string

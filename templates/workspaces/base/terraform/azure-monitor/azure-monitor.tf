@@ -26,8 +26,7 @@ resource "azurerm_storage_account" "app_insights" {
   local_user_enabled               = false
   tags                             = var.tre_workspace_tags
 
-  # unclear the implications on az-monitor, so leaving it for now.
-  # shared_access_key_enabled        = false
+  shared_access_key_enabled = false
 
   dynamic "identity" {
     for_each = var.enable_cmk_encryption ? [1] : []

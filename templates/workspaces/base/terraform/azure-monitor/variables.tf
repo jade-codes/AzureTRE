@@ -28,6 +28,12 @@ variable "azure_monitor_ods_opinsights_dns_zone_id" {
 variable "azure_monitor_agentsvc_dns_zone_id" {
   type = string
 }
+variable "azure_monitor_prometheus_dns_zone_id" {
+  type = string
+}
+variable "grafana_dns_zone_id" {
+  type = string
+}
 variable "blob_core_dns_zone_id" {
   type = string
 }
@@ -44,5 +50,8 @@ variable "encryption_identity_id" {
   type = string
 }
 variable "encryption_key_versionless_id" {
+  type = string
+}
+variable "grafana_admin_id" {
   type = string
 }

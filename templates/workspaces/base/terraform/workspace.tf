@@ -85,11 +85,14 @@ module "azure_monitor" {
   azure_monitor_oms_opinsights_dns_zone_id = module.network.azure_monitor_oms_opinsights_dns_zone_id
   azure_monitor_ods_opinsights_dns_zone_id = module.network.azure_monitor_ods_opinsights_dns_zone_id
   azure_monitor_agentsvc_dns_zone_id       = module.network.azure_monitor_agentsvc_dns_zone_id
+  azure_monitor_prometheus_dns_zone_id     = module.network.azure_monitor_prometheus_dns_zone_id
+  grafana_dns_zone_id                      = module.network.grafana_dns_zone_id
   blob_core_dns_zone_id                    = module.network.blobcore_zone_id
   enable_cmk_encryption                    = var.enable_cmk_encryption
   encryption_key_versionless_id            = var.enable_cmk_encryption ? azurerm_key_vault_key.encryption_key[0].versionless_id : null
   encryption_identity_id                   = var.enable_cmk_encryption ? azurerm_user_assigned_identity.encryption_identity[0].id : null
   enable_local_debugging                   = var.enable_local_debugging
+  grafana_admin_id                         = var.workspace_owner_object_id
   depends_on = [
     module.network,
     module.airlock
